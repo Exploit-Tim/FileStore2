@@ -101,7 +101,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
                  [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
                  [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
                  [InlineKeyboardButton("Tutup", callback_data="close")],
-         ]
+            ]
         await query.message.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
     elif data == "back_to_settings":
             keyboard = [
@@ -111,7 +111,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
                [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
                [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
                [InlineKeyboardButton("Tutup", callback_data="close")], 
-        ]
+            ]
         await query.message.edit_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
    
     #===MENU DAFTAR FSUB====#
