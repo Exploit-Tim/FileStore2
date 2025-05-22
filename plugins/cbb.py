@@ -120,23 +120,57 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         ]
         await query.message.edit_text(f"<b>⚡ Current Channel List:</b>\n\n{channel_list}", reply_markup=InlineKeyboardMarkup(keyboard))
 
-elif data == "tambah_channel":
-    await query.message.edit_text("Silakan masukkan ID channel baru (gunakan tanda minus, misal: <code>-1001234567890</code>):")
+    elif data == "tambah_channel":
+    await query.message.edit_text(
+        "Silakan masukkan ID channel baru (gunakan tanda minus, misal: <code>-1001234567890</code>):"
+    )
     response = await client.listen(query.from_user.id)
+
+    temp = await response.reply("<b><i>ᴡᴀɪᴛ ᴀ sᴇᴄ..</i></b>", quote=True)
 
     try:
         channel_id = int(response.text)
-        chat = await client.get_chat(channel_id)  # VALIDASI channel
+    except ValueError:
+        return await temp.edit("<b>❌ Invalid Channel ID!</b>")
 
-        if not chat.type.name in ["CHANNEL", "SUPERGROUP"]:
-            raise ValueError("Bukan channel atau supergroup.")
+    # Cek apakah channel sudah ada
+    all_channels = await db.show_channels()
+    channel_ids_only = [cid if isinstance(cid, int) else cid[0] for cid in all_channels]
+    if channel_id in channel_ids_only:
+        return await temp.edit(f"<b>Channel already exists:</b> <code>{channel_id}</code>")
 
-        await db.add_channel(channel_id)  # Simpan ke database
-        await response.reply_text(f"✅ Channel <b>{chat.title}</b> berhasil ditambahkan!", quote=True)
+    try:
+        chat = await client.get_chat(channel_id)
+
+        if chat.type != ChatType.CHANNEL:
+            return await temp.edit("<b>❌ Only public or private channels are allowed.</b>")
+
+        member = await client.get_chat_member(chat.id, "me")
+
+        if member.status not in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
+            return await temp.edit("<b>❌ Bot must be an admin in that channel.</b>")
+
+        # Ambil link undangan channel
+        try:
+            link = await client.export_chat_invite_link(chat.id)
+        except Exception:
+            link = f"https://t.me/{chat.username}" if chat.username else f"https://t.me/c/{str(chat.id)[4:]}"
+
+        await db.add_channel(channel_id)
+
+        await temp.edit(
+            f"<b>✅ Force-sub channel added successfully!</b>\n\n"
+            f"<b>Name:</b> <a href='{link}'>{chat.title}</a>\n"
+            f"<b>ID:</b> <code>{channel_id}</code>",
+            disable_web_page_preview=True
+        )
 
     except Exception as e:
-        await response.reply_text(f"❌ Gagal menambahkan channel.\n{e}", quote=True)
+        await temp.edit(
+            f"<b>❌ Failed to add channel:</b>\n<code>{channel_id}</code>\n\n<i>{e}</i>"
+        )
 
+    # Tampilkan kembali menu pengaturan
     keyboard = [
         [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
         [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
@@ -145,7 +179,7 @@ elif data == "tambah_channel":
         [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
         [InlineKeyboardButton("Tutup", callback_data="close")],
     ]
-    await response.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+    await client.send_message(query.from_user.id, "Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
 
 
     elif data == "hapus_channel":
