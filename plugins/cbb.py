@@ -96,21 +96,21 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         admin_id = int(data.split("_")[-1])
         await db.del_admin(admin_id)
         await query.message.edit_text(f"Admin dengan ID {admin_id} berhasil dihapus.")
-        keyboard = [
-            [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
-            [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
-            [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
-            [InlineKeyboardButton("Tutup", callback_data="close")],
-        ]
+            keyboard = [
+                 [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+                 [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
+                 [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
+                 [InlineKeyboardButton("Tutup", callback_data="close")],
+         ]
         await query.message.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
     elif data == "back_to_settings":
-    keyboard = [
-        [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
-        [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
-        [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
-        [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
-        [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
-        [InlineKeyboardButton("Tutup", callback_data="close")], 
+            keyboard = [
+               [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+               [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
+               [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
+               [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
+               [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
+               [InlineKeyboardButton("Tutup", callback_data="close")], 
         ]
         await query.message.edit_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
    
@@ -178,26 +178,31 @@ async def cb_handler(client: Bot, query: CallbackQuery):
 
     elif data == "back_to_settings":
         keyboard = [
-        [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
-        [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
-        [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
-        [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
-        [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
-        [InlineKeyboardButton("Tutup", callback_data="close")], 
+             [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+             [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
+             [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
+             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
+             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
+             [InlineKeyboardButton("Tutup", callback_data="close")], 
         ]
         await query.message.edit_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
 
 #===MENU FSUB MODR====#
 
     elif data == "Mode_fsub":
-       channels = await db.show_channels()
-       buttons = []
-       for cid in channels:
+    channels = await db.show_channels()
+    buttons = []
+    for cid in channels:
         try:
             chat = await client.get_chat(cid)
             mode = await db.get_channel_mode(cid)
             status = "🟢" if mode == "on" else "🔴"
             buttons.append([InlineKeyboardButton(f"{status} {chat.title}", callback_data=f"toggle_fsub_{cid}")])
+        except:
+            continue
+    buttons.append([InlineKeyboardButton("‹ ʙᴀᴄᴋ", callback_data="back_to_settings")])
+    await query.message.edit_text("Pilih channel untuk toggle mode Fsub:", reply_markup=InlineKeyboardMarkup(buttons))
+
         except:
             continue
     buttons.append([InlineKeyboardButton("‹ ʙᴀᴄᴋ", callback_data="back_to_settings")])
@@ -220,13 +225,13 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         await query.answer(f"Gagal toggle mode Fsub: {str(e)}", show_alert=True)
 
     elif data == "back_to_settings":
-    keyboard = [
-        [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
-        [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
-        [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
-        [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
-        [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
-        [InlineKeyboardButton("Tutup", callback_data="close")],
+         keyboard = [
+             [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+             [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
+             [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
+             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
+             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
+             [InlineKeyboardButton("Tutup", callback_data="close")],
     ]
     await query.message.edit_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
 
