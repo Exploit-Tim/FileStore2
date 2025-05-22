@@ -91,37 +91,73 @@ async def cb_handler(client: Bot, query: CallbackQuery):
                 keyboard.append([InlineKeyboardButton(f"ID: {admin_id}", callback_data=f"hapus_admin_id_{admin_id}")])
             keyboard.append([InlineKeyboardButton("Kembali", callback_data="daftar_admin")])
             await query.message.edit_text("Pilih admin yang ingin dihapus:", reply_markup=InlineKeyboardMarkup(keyboard))
-   elif data.startswith("hapus_admin_id_"):
-    admin_id = int(data.split("_")[-1])
-    await db.del_admin(admin_id)
-    await query.message.edit_text(f"Admin dengan ID {admin_id} berhasil dihapus.")
-    keyboard = [
-        [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
-        [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
-        [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
-        [InlineKeyboardButton("Tutup", callback_data="close")],
-    ]
-    await query.message.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
-elif data == "back_to_settings":
-    keyboard = [
-        [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
-        [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
-        [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
-        [InlineKeyboardButton("Tutup", callback_data="close")],
-    ]
-    await query.message.edit_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
-elif data == "fsub_back":
-    channels = await db.show_channels()
-    buttons = []
-    for cid in channels:
+
+    elif data.startswith("hapus_admin_id_"):
+        admin_id = int(data.split("_")[-1])
+        await db.del_admin(admin_id)
+        await query.message.edit_text(f"Admin dengan ID {admin_id} berhasil dihapus.")
+        keyboard = [
+            [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+            [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
+            [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
+            [InlineKeyboardButton("Tutup", callback_data="close")],
+        ]
+        await query.message.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+    elif data == "back_to_settings":
+        keyboard = [
+            [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+            [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
+            [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
+            [InlineKeyboardButton("Tutup", callback_data="close")],
+        ]
+        await query.message.edit_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+    elif data == "fsub_back":
+        channels = await db.show_channels()
+        buttons = []
+        for cid in channels:
+            try:
+                chat = await client.get_chat(cid)
+                mode = await db.get_channel_mode(cid)
+                status = "🟢" if mode == "on" else "🔴"
+                buttons.append([InlineKeyboardButton(f"{status} {chat.title}", callback_data=f"rfs_ch_{cid}")])
+            except:
+                continue
+        await query.message.edit_text(
+            "sᴇʟᴇᴄᴛ ᴀ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴛᴏɢɢʟᴇ ɪᴛs ғᴏʀᴄᴇ-sᴜʙ ᴍᴏᴅᴇ:",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+    elif data.startswith("rfs_ch_"):
+        cid = int(data.split("_")[2])
         try:
             chat = await client.get_chat(cid)
             mode = await db.get_channel_mode(cid)
-            status = "🟢" if mode == "on" else "🔴"
-            buttons.append([InlineKeyboardButton(f"{status} {chat.title}", callback_data=f"rfs_ch_{cid}")])
-        except:
-            continue
-    await query.message.edit_text(
-        "sᴇʟᴇᴄᴛ ᴀ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴛᴏɢɢʟᴇ ɪᴛs ғᴏʀᴄᴇ-sᴜʙ ᴍᴏᴅᴇ:",
-        reply_markup=InlineKeyboardMarkup(buttons)
-    )
+            status = "🟢 ᴏɴ" if mode == "on" else "🔴 ᴏғғ"
+            new_mode = "ᴏғғ" if mode == "on" else "on"
+            buttons = [
+                [InlineKeyboardButton(f"ʀᴇǫ ᴍᴏᴅᴇ {'OFF' if mode == 'on' else 'ON'}", callback_data=f"rfs_toggle_{cid}_{new_mode}")],
+                [InlineKeyboardButton("‹ ʙᴀᴄᴋ", callback_data="fsub_back")]
+            ]
+            await query.message.edit_text(
+                f"Channel: {chat.title}\nCurrent Force-Sub Mode: {status}",
+                reply_markup=InlineKeyboardMarkup(buttons)
+            )
+        except Exception:
+            await query.answer("Failed to fetch channel info", show_alert=True)
+    elif data.startswith("rfs_toggle_"):
+        cid, action = data.split("_")[2:]
+        cid = int(cid)
+        mode = "on" if action == "on" else "off"
+        await db.set_channel_mode(cid, mode)
+        await query.answer(f"Force-Sub set to {'ON' if mode == 'on' else 'OFF'}")
+        # Refresh the same channel's mode view
+        chat = await client.get_chat(cid)
+        status = "🟢 ON" if mode == "on" else "🔴 OFF"
+        new_mode = "off" if mode == "on" else "on"
+        buttons = [
+            [InlineKeyboardButton(f"ʀᴇǫ ᴍᴏᴅᴇ {'OFF' if mode == 'on' else 'ON'}", callback_data=f"rfs_toggle_{cid}_{new_mode}")],
+            [InlineKeyboardButton("‹ ʙᴀᴄᴋ", callback_data="fsub_back")]
+        ]
+        await query.message.edit_text(
+            f"Channel: {chat.title}\nCurrent Force-Sub Mode: {status}",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
