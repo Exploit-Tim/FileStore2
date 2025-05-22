@@ -190,8 +190,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
 #===MENU FSUB MODR====#
 
     elif data == "Mode_fsub":
-         channels = await 
-       db.show_channels()
+         channels = await db.show_channels()
        buttons = []
        for cid in channels:
         try:
