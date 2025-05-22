@@ -76,6 +76,8 @@ async def cb_handler(client: Bot, query: CallbackQuery):
 
         keyboard = [
             [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+            [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
+            [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
@@ -97,6 +99,8 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         await query.message.edit_text(f"Admin dengan ID {admin_id} berhasil dihapus.")
         keyboard = [
             [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+            [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
+            [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
@@ -127,7 +131,9 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             await response.reply_text("Gagal menambahkan channel baru. Pastikan ID channel valid.")
 
         keyboard = [
-            [InlineKeyboardButton("Daftar Channel", callback_data="daftar_fsub")],
+            [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+            [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
+            [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
@@ -148,7 +154,9 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         await db.rem_channel(channel_id)
         await query.message.edit_text(f"Channel dengan ID {channel_id} berhasil dihapus.")
         keyboard = [
-            [InlineKeyboardButton("Daftar Channel", callback_data="daftar_fsub")],
+            [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+            [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
+            [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
