@@ -106,6 +106,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
     elif data == "back_to_settings":
         keyboard = [
             [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+            [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
@@ -163,17 +164,17 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             await query.message.edit_text("Pilih channel yang ingin dihapus:", reply_markup=InlineKeyboardMarkup(keyboard))
 
     elif data.startswith("hapus_channel_id_"):
-        channel_id = int(data.split("_")[-1])
-        await db.del_channel(channel_id)
-        await query.message.edit_text(f"Channel dengan ID {channel_id} berhasil dihapus.")
-        keyboard = [
-            [InlineKeyboardButton("Daftar Channel", callback_data="daftar_fsub")],
-            [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
-            [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
-            [InlineKeyboardButton("Tutup", callback_data="close")],
-        ]
-        await query.message.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
-
+    channel_id = int(data.split("_")[-1])
+    await db.rem_channel(channel_id)
+    await query.message.edit_text(f"Channel dengan ID {channel_id} berhasil dihapus.")
+    keyboard = [
+        [InlineKeyboardButton("Daftar Channel", callback_data="daftar_fsub")],
+        [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
+        [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
+        [InlineKeyboardButton("Tutup", callback_data="close")],
+    ]
+    await query.message.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+    
     elif data == "back_to_settings":
         keyboard = [
             [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
