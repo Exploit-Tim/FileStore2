@@ -190,9 +190,10 @@ async def cb_handler(client: Bot, query: CallbackQuery):
 #===MENU FSUB MODR====#
 
     elif data == "Mode_fsub":
-    channels = await db.show_channels()
-    buttons = []
-    for cid in channels:
+         channels = await 
+       db.show_channels()
+       buttons = []
+       for cid in channels:
         try:
             chat = await client.get_chat(cid)
             mode = await db.get_channel_mode(cid)
@@ -239,7 +240,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
 #===MEm====#
     
     elif data == "fsub_back":
-    channels = await db.show_channels()
+         channels = await db.show_channels()
     if not channels: # Pastikan indentasi ini benar
         await query.message.edit_text("Tidak ada channel yang tersedia.")
     else:
