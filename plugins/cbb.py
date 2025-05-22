@@ -165,33 +165,56 @@ async def cb_handler(client: Bot, query: CallbackQuery):
 
     elif data == "Mode_fsub":
         channels = await db.show_channels()
-        buttons = []
-        for cid in channels:
-            try:
-                chat = await client.get_chat(cid)
-                mode = await db.get_channel_mode(cid)
-                status = "🟢" if mode == "on" else "🔴"
-                buttons.append([InlineKeyboardButton(f"{status} {chat.title}", callback_data=f"toggle_fsub_{cid}")])
-            except:
-                continue
-        buttons.append([InlineKeyboardButton("‹ ʙᴀᴄᴋ", callback_data="back_to_settings")])
-        await query.message.edit_text("Pilih channel untuk toggle mode Fsub:", reply_markup=InlineKeyboardMarkup(buttons))
+        if not channels:
+            return await query.message.edit_text("<b>❌ Tidak ada channel yang ditambahkan.</b>")
 
-    elif data.startswith("toggle_fsub_"):
-        cid = int(data.split("_")[-1])
-        try:
-            chat = await client.get_chat(cid)
-            mode = await db.get_channel_mode(cid)
-            new_mode = "off" if mode == "on" else "on"
-            await db.set_channel_mode(cid, new_mode)
-            status = "🟢 ON" if new_mode == "on" else "🔴 OFF"
-            buttons = [
-                [InlineKeyboardButton(f"ʀᴇǫ ᴍᴏᴅᴇ {'OFF' if new_mode == 'on' else 'ON'}", callback_data=f"toggle_fsub_{cid}")],
-                [InlineKeyboardButton("‹ ʙᴀᴄᴋ", callback_data="Mode_fsub")]
-            ]
-            await query.message.edit_text(f"Channel: {chat.title}\nCurrent Force-Sub Mode: {status}", reply_markup=InlineKeyboardMarkup(buttons))
-        except Exception as e:
-            await query.answer(f"Gagal toggle mode Fsub: {str(e)}", show_alert=True)
+        buttons = []
+        for ch_id in channels:
+            try:
+                chat = await client.get_chat(ch_id)
+                mode = await db.get_channel_mode(ch_id)
+                status = "🟢 ON" if mode == "on" else "🔴 OFF"
+                title = f"{chat.title} [{status}]"
+                buttons.append([InlineKeyboardButton(title, callback_data=f"toggle_mode_{ch_id}")])
+            except:
+                buttons.append([InlineKeyboardButton(f"⚠️ {ch_id} (Error)", callback_data=f"toggle_mode_{ch_id}")])
+
+        buttons.append([InlineKeyboardButton("Kembali", callback_data="back_to_settings")])
+
+        await query.message.edit_text(
+            "<b>⚙️ Mode Fsub per Channel</b>\n"
+            "<i>Klik nama channel untuk mengaktifkan/nonaktifkan mode Fsub:</i>\n\n"
+            "🟢 = Aktif\n🔴 = Tidak aktif",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+
+    elif data.startswith("toggle_mode_"):
+        ch_id = int(data.split("_")[-1])
+        current_mode = await db.get_channel_mode(ch_id)
+        new_mode = "off" if current_mode == "on" else "on"
+        await db.set_channel_mode(ch_id, new_mode)
+
+        # Refresh tampilan Mode_fsub
+        channels = await db.show_channels()
+        buttons = []
+        for channel_id in channels:
+            try:
+                chat = await client.get_chat(channel_id)
+                mode = await db.get_channel_mode(channel_id)
+                status = "🟢 ON" if mode == "on" else "🔴 OFF"
+                title = f"{chat.title} [{status}]"
+                buttons.append([InlineKeyboardButton(title, callback_data=f"toggle_mode_{channel_id}")])
+            except:
+                buttons.append([InlineKeyboardButton(f"⚠️ {channel_id} (Error)", callback_data=f"toggle_mode_{channel_id}")])
+
+        buttons.append([InlineKeyboardButton("Kembali", callback_data="back_to_settings")])
+
+        await query.message.edit_text(
+            "<b>⚙️ Mode Fsub per Channel</b>\n"
+            "<i>Klik nama channel untuk mengaktifkan/nonaktifkan mode Fsub:</i>\n\n"
+            "🟢 = Aktif\n🔴 = Tidak aktif",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
 
     elif data.startswith("rfs_ch_"):
         cid = int(data.split("_")[2])
