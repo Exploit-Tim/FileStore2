@@ -8,7 +8,7 @@ async def settings_command(client: Client, message: Message):
     keyboard = [
         [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
         [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
-        [InlineKeyboardButton("Set Time Delete", callback_data="set_time_delete")],
+        [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
         [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
         [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
         [InlineKeyboardButton("Tutup", callback_data="close")],
