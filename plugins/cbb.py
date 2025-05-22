@@ -10,6 +10,46 @@ from config import *
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from database.database import *
 from pyrogram.enums import ParseMode, ChatAction, ChatMemberStatus, ChatType
+import speedtest
+import time
+
+start_time = time.time()
+
+def format_uptime(uptime):
+    days = uptime.days
+    hours, remainder = divmod(uptime.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{days}d {hours}h {minutes}m {seconds}s"
+
+async def get_server_info():
+    try:
+        st = speedtest.Speedtest()
+        st.get_best_server()
+        st.download()
+        st.upload()
+        result = st.results.dict()
+
+        uptime = timedelta(seconds=time.time() - start_time)
+        uptime_str = format_uptime(uptime)
+
+        info = f"""
+<b>📊 Server Info</b>
+<blockquote>⏰ Uptime: {uptime_str}</blockquote>
+<b>📈 Speedtest Results</b>
+<blockquote>👥 <b>Client :</b>
+⟡ ISP: {result['client']['isp']}
+⟡ Country: {result['client']['country']}
+🏢 <b>Server :</b>
+⟡ Name: {result['server']['name']}
+⟡ Country: {result['server']['country']}, {result['server']['cc']}
+⟡ Sponsor: {result['server']['sponsor']}
+⟡ Ping: {result['ping']}
+⟡ Download: {round(result['download'] / 1024 / 1024, 2)} Mbps
+⟡ Upload: {round(result['upload'] / 1024 / 1024, 2)} Mbps</blockquote>
+"""
+        return info
+    except Exception as e:
+        return f"<b>❌ Error:</b> <code>{e}</code>"
 
 
 @Bot.on_callback_query()
@@ -81,6 +121,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
             [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
             [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
+            [InlineKeyboardButton("Server Info", callback_data="server_info")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
@@ -105,6 +146,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
             [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
             [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
+            [InlineKeyboardButton("Server Info", callback_data="server_info")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
@@ -191,6 +233,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
             [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
             [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
+            [InlineKeyboardButton("Server Info", callback_data="server_info")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
@@ -216,6 +259,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
             [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
             [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
+            [InlineKeyboardButton("Server Info", callback_data="server_info")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
@@ -321,6 +365,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
             [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
             [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
+            [InlineKeyboardButton("Server Info", callback_data="server_info")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
@@ -353,8 +398,35 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
             [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
             [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
+            [InlineKeyboardButton("Server Info", callback_data="server_info")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
         ]
         await client.send_message(query.from_user.id, "Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+
+    elif data == "server_info":
+        await query.message.edit_text(
+            "<b>🔄 Mengambil informasi server...</b>"
+        )
+        result = await get_server_info()
+        await query.message.edit_text(
+            result,
+            parse_mode=ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("🔄 Refresh", callback_data="refresh_info")],
+                [InlineKeyboardButton("‹ Kembali", callback_data="back_to_settings")]
+            ])
+        )
+
+    elif data == "refresh_info":
+        await query.answer("Memuat ulang...")
+        result = await get_server_info()
+        await query.message.edit_text(
+            result,
+            parse_mode=ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("🔄 Refresh", callback_data="refresh_info")],
+                [InlineKeyboardButton("‹ Kembali", callback_data="back_to_settings")]
+            ])
+        )
