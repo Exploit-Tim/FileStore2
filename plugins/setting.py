@@ -2,7 +2,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from bot import Bot
 
-@Bot.on_message(filters.command('settings') & admin)
+@Bot.on_message(filters.command('settings'))
 async def setting_menu(client, message: Message):
     keyboard = [
         [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
