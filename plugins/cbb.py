@@ -422,6 +422,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
     elif data == "refresh_info":
         await query.answer("Memuat ulang...")
         result = await get_server_info()
+
         await query.message.edit_text(
             result,
             parse_mode=ParseMode.HTML,
@@ -430,3 +431,18 @@ async def cb_handler(client: Bot, query: CallbackQuery):
                 [InlineKeyboardButton("‹ Kembali", callback_data="back_to_settings")]
             ])
         )
+
+elif data == "db_id":
+    await query.message.edit_text("Belum tersedia.")
+
+elif data == "db_url":
+    await query.message.edit_text("Belum tersedia.")
+
+elif data == "protect":
+    await query.message.edit_text("Belum tersedia.")
+
+elif data == "custom_caption":
+    await query.message.edit_text("Belum tersedia.")
+
+elif data == "konten":
+    await query.message.edit_text("Belum tersedia.")
