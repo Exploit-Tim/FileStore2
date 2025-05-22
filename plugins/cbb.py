@@ -208,8 +208,12 @@ async def cb_handler(client: Bot, query: CallbackQuery):
     elif data == "Mode_fsub":
         channels = await db.show_channels()
         if not channels:
-            return await query.message.edit_text("<b>❌ Tidak ada channel yang ditambahkan.</b>")
-
+            return await query.message.edit_text(
+                "<b>❌ Tidak ada channel yang ditambahkan.</b>",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton("Kembali", callback_data="back_to_settings")]
+                ])
+            )
         buttons = []
         for ch_id in channels:
             try:
