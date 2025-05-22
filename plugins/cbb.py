@@ -176,8 +176,8 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         ]
         await query.message.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
 
-elif data == "back_to_settings":
-    keyboard = [
+    elif data == "back_to_settings":
+        keyboard = [
         [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
         [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
         [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
@@ -189,10 +189,10 @@ elif data == "back_to_settings":
 
 #===MENU FSUB MODR====#
 
-elif data == "Mode_fsub":
-    channels = await db.show_channels()
-    buttons = []
-    for cid in channels:
+    elif data == "Mode_fsub":
+       channels = await db.show_channels()
+       buttons = []
+       for cid in channels:
         try:
             chat = await client.get_chat(cid)
             mode = await db.get_channel_mode(cid)
@@ -203,7 +203,7 @@ elif data == "Mode_fsub":
     buttons.append([InlineKeyboardButton("‹ ʙᴀᴄᴋ", callback_data="back_to_settings")])
     await query.message.edit_text("Pilih channel untuk toggle mode Fsub:", reply_markup=InlineKeyboardMarkup(buttons))
 
-elif data.startswith("toggle_fsub_"):
+    elif data.startswith("toggle_fsub_"):
     cid = int(data.split("_")[-1])
     try:
         chat = await client.get_chat(cid)
@@ -219,7 +219,7 @@ elif data.startswith("toggle_fsub_"):
     except Exception as e:
         await query.answer(f"Gagal toggle mode Fsub: {str(e)}", show_alert=True)
 
-elif data == "back_to_settings":
+    elif data == "back_to_settings":
     keyboard = [
         [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
         [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
@@ -231,7 +231,7 @@ elif data == "back_to_settings":
     await query.message.edit_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
 
 
-#===MENU FSUB MODR====#
+#===MEm====#
     
     elif data == "fsub_back":
         channels = await db.show_channels()
