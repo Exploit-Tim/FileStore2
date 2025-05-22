@@ -80,6 +80,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
             [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
             [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
+            [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
@@ -103,6 +104,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
             [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
             [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
+            [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
@@ -188,6 +190,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
             [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
             [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
+            [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
@@ -212,6 +215,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
             [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
             [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
+            [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
@@ -311,13 +315,46 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             reply_markup=InlineKeyboardMarkup(buttons)
         )
 
-    elif data == "back_to_settings" or data == "fsub_back":
+    elif data in ["back_to_settings", "fsub_back"]:
         keyboard = [
             [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
             [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
             [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
+            [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
             [InlineKeyboardButton("Tutup", callback_data="close")],
         ]
         await query.message.edit_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+
+    elif data == "time_delete":
+        current_time = await db.get_del_timer()
+        await query.message.edit_text(
+            f"<b>⏱ Current Delete Timer:</b> <code>{current_time}</code> seconds\n\n"
+            "To change it, send the number of seconds as a reply to this message.",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("‹ Back", callback_data="back_to_settings")]
+            ])
+        )
+
+        # Tunggu input pengguna
+        response = await client.listen(query.from_user.id)
+
+        try:
+            duration = int(response.text)
+            await db.set_del_timer(duration)
+            await response.reply(f"<b>✅ Delete timer updated to {duration} seconds.</b>")
+        except ValueError:
+            await response.reply("<b>❌ Invalid number. Please send a valid duration in seconds.</b>")
+
+        # Tampilkan ulang menu
+        keyboard = [
+            [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+            [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
+            [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
+            [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
+            [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
+            [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
+            [InlineKeyboardButton("Tutup", callback_data="close")],
+        ]
+        await client.send_message(query.from_user.id, "Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
