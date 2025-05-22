@@ -128,10 +128,10 @@ async def cb_handler(client: Bot, query: CallbackQuery):
              [InlineKeyboardButton("Kembali", callback_data="back_to_settings")],
          ]
 
-    await query.message.edit_text(
-        f"<b>⚡ Daftar Channel Saat Ini:</b>\n\n{channel_list}",
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+         await query.message.edit_text(
+              f"<b>⚡ Daftar Channel Saat Ini:</b>\n\n{channel_list}",
+               reply_markup=InlineKeyboardMarkup(keyboard)
+               )
 
     elif data == "tambah_channel":
         await query.message.edit_text(
