@@ -118,7 +118,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
 
     elif data == "daftar_fsub":
         channels = await db.show_channels()
-       if not channels:
+        if not channels:
             channel_list = "<b><blockquote>❌ No channels found.</blockquote></b>"
         else:
             channel_list = "\n".join(f"<b><blockquote>ID: <code>{id}</code></blockquote></b>" for id in channels)
