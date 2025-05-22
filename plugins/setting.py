@@ -77,4 +77,7 @@ async def menu_ban(client: Client, callback_query: CallbackQuery):
     else:
         ban_list = "\n".join(f"<b><blockquote>ID: <code>{id}</code></blockquote></b>" for id in ban_ids)
     keyboard = [
-        [InlineKeyboardButton("Kembali",
+        [InlineKeyboardButton("Kembali", callback_data="back_to_settings")],
+    ]
+    await callback_query.message.edit_text(f"<b>⚡ Current Ban ID List:</b>\n\n{ban_list}", reply_markup=InlineKeyboardMarkup(keyboard))
+    await callback_query.answer()
