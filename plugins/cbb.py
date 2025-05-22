@@ -110,17 +110,28 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         await query.message.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
 
     elif data == "daftar_fsub":
-        channels = await db.show_channels()
-        if not channels:
-            channel_list = "<b><blockquote>❌ No channels found.</blockquote></b>"
-        else:
-            channel_list = "\n".join(f"<b><blockquote>ID: <code>{id}</code></blockquote></b>" for id in channels)
-        keyboard = [
-            [InlineKeyboardButton("Tambah Channel", callback_data="tambah_channel")],
-            [InlineKeyboardButton("Hapus Channel", callback_data="hapus_channel")],
-            [InlineKeyboardButton("Kembali", callback_data="back_to_settings")],
-        ]
-        await query.message.edit_text(f"<b>⚡ Current Channel List:</b>\n\n{channel_list}", reply_markup=InlineKeyboardMarkup(keyboard))
+         channels = await db.show_channels()
+         if not channels:
+             channel_list = "❌ <b>Tidak ada channel yang ditambahkan.</b>"
+         else:
+             channel_list = ""
+         for ch_id in channels:
+            try:
+                chat = await client.get_chat(ch_id)
+                channel_list += f"🔹 <b>{chat.title}</b>\n<code>{ch_id}</code>\n\n"
+            except:
+                channel_list += f"⚠️ <b>Unknown Channel</b>\n<code>{ch_id}</code>\n\n"
+
+         keyboard = [
+             [InlineKeyboardButton("Tambah Channel", callback_data="tambah_channel")],
+             [InlineKeyboardButton("Hapus Channel", callback_data="hapus_channel")],
+             [InlineKeyboardButton("Kembali", callback_data="back_to_settings")],
+         ]
+
+    await query.message.edit_text(
+        f"<b>⚡ Daftar Channel Saat Ini:</b>\n\n{channel_list}",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
 
     elif data == "tambah_channel":
         await query.message.edit_text(
