@@ -120,25 +120,33 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         ]
         await query.message.edit_text(f"<b>⚡ Current Channel List:</b>\n\n{channel_list}", reply_markup=InlineKeyboardMarkup(keyboard))
 
-    elif data == "tambah_channel":
-        await query.message.edit_text("Silakan masukkan ID channel baru:")
-        response = await client.listen(query.from_user.id)
-        try:
-            channel_id = int(response.text)
-            await db.add_channel(channel_id)
-            await response.reply_text("Channel baru berhasil ditambahkan!")
-        except:
-            await response.reply_text("Gagal menambahkan channel baru. Pastikan ID channel valid.")
+elif data == "tambah_channel":
+    await query.message.edit_text("Silakan masukkan ID channel baru (gunakan tanda minus, misal: <code>-1001234567890</code>):")
+    response = await client.listen(query.from_user.id)
 
-        keyboard = [
-            [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
-            [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
-            [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
-            [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
-            [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
-            [InlineKeyboardButton("Tutup", callback_data="close")],
-        ]
-        await response.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+    try:
+        channel_id = int(response.text)
+        chat = await client.get_chat(channel_id)  # VALIDASI channel
+
+        if not chat.type.name in ["CHANNEL", "SUPERGROUP"]:
+            raise ValueError("Bukan channel atau supergroup.")
+
+        await db.add_channel(channel_id)  # Simpan ke database
+        await response.reply_text(f"✅ Channel <b>{chat.title}</b> berhasil ditambahkan!", quote=True)
+
+    except Exception as e:
+        await response.reply_text(f"❌ Gagal menambahkan channel.\n{e}", quote=True)
+
+    keyboard = [
+        [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+        [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
+        [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
+        [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
+        [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
+        [InlineKeyboardButton("Tutup", callback_data="close")],
+    ]
+    await response.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+
 
     elif data == "hapus_channel":
         channels = await db.show_channels()
