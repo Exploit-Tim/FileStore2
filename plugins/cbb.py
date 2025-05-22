@@ -111,6 +111,81 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             [InlineKeyboardButton("Tutup", callback_data="close")],
         ]
         await query.message.edit_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+   
+    #=======#
+
+    elif data == "daftar_fsub":
+        channels = await db.show_channels()
+        if not channels:
+            channel_list = "<b><blockquote>❌ No channels found.</blockquote></b>"
+        else:
+            channel_list = "\n".join(f"<b><blockquote>ID: <code>{id}</code></blockquote></b>" for id in channels)
+        keyboard = [
+            [InlineKeyboardButton("Tambah Channel", callback_data="tambah_channel")],
+            [InlineKeyboardButton("Hapus Channel", callback_data="hapus_channel")],
+            [InlineKeyboardButton("Kembali", callback_data="back_to_settings")],
+        ]
+        await query.message.edit_text(f"<b>⚡ Current Channel List:</b>\n\n{channel_list}", reply_markup=InlineKeyboardMarkup(keyboard))
+
+    elif data == "tambah_channel":
+        await query.message.edit_text("Silakan masukkan ID channel baru:")
+        response = await client.listen(query.from_user.id)
+        try:
+            channel_id = int(response.text)
+            await db.add_channel(channel_id)
+            await response.reply_text("Channel baru berhasil ditambahkan!")
+            keyboard = [
+                [InlineKeyboardButton("Daftar Channel", callback_data="daftar_fsub")],
+                [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
+                [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
+                [InlineKeyboardButton("Tutup", callback_data="close")],
+            ]
+            await response.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+        except:
+            await response.reply_text("Gagal menambahkan channel baru. Pastikan ID channel valid.")
+            keyboard = [
+                [InlineKeyboardButton("Daftar Channel", callback_data="daftar_fsub")],
+                [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
+                [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
+                [InlineKeyboardButton("Tutup", callback_data="close")],
+            ]
+            await response.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+
+    elif data == "hapus_channel":
+        channels = await db.show_channels()
+        if not channels:
+            await query.message.edit_text("Tidak ada channel yang dapat dihapus.")
+        else:
+            keyboard = []
+            for channel_id in channels:
+                keyboard.append([InlineKeyboardButton(f"ID: {channel_id}", callback_data=f"hapus_channel_id_{channel_id}")])
+            keyboard.append([InlineKeyboardButton("Kembali", callback_data="daftar_fsub")])
+            await query.message.edit_text("Pilih channel yang ingin dihapus:", reply_markup=InlineKeyboardMarkup(keyboard))
+
+    elif data.startswith("hapus_channel_id_"):
+        channel_id = int(data.split("_")[-1])
+        await db.del_channel(channel_id)
+        await query.message.edit_text(f"Channel dengan ID {channel_id} berhasil dihapus.")
+        keyboard = [
+            [InlineKeyboardButton("Daftar Channel", callback_data="daftar_fsub")],
+            [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
+            [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
+            [InlineKeyboardButton("Tutup", callback_data="close")],
+        ]
+        await query.message.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+
+    elif data == "back_to_settings":
+        keyboard = [
+            [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+            [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
+            [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
+            [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
+            [InlineKeyboardButton("Tutup", callback_data="close")],
+        ]
+        await query.message.edit_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+
+    #=======#
+    
     elif data == "fsub_back":
         channels = await db.show_channels()
         buttons = []
