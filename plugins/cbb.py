@@ -189,10 +189,10 @@ async def cb_handler(client: Bot, query: CallbackQuery):
 
 #===MENU FSUB MODR====#
 
-    elif data == "Mode_fsub":
-         channels = await db.show_channels()
-       buttons = []
-       for cid in channels:
+elif data == "Mode_fsub":
+    channels = await db.show_channels()
+    buttons = []
+    for cid in channels:
         try:
             chat = await client.get_chat(cid)
             mode = await db.get_channel_mode(cid)
@@ -203,12 +203,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
     buttons.append([InlineKeyboardButton("‹ ʙᴀᴄᴋ", callback_data="back_to_settings")])
     await query.message.edit_text("Pilih channel untuk toggle mode Fsub:", reply_markup=InlineKeyboardMarkup(buttons))
 
-        except:
-            continue
-    buttons.append([InlineKeyboardButton("‹ ʙᴀᴄᴋ", callback_data="back_to_settings")])
-    await query.message.edit_text("Pilih channel untuk toggle mode Fsub:", reply_markup=InlineKeyboardMarkup(buttons))
-
-    elif data.startswith("toggle_fsub_"):
+elif data.startswith("toggle_fsub_"):
     cid = int(data.split("_")[-1])
     try:
         chat = await client.get_chat(cid)
@@ -224,14 +219,14 @@ async def cb_handler(client: Bot, query: CallbackQuery):
     except Exception as e:
         await query.answer(f"Gagal toggle mode Fsub: {str(e)}", show_alert=True)
 
-    elif data == "back_to_settings":
-         keyboard = [
-             [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
-             [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
-             [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
-             [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
-             [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
-             [InlineKeyboardButton("Tutup", callback_data="close")],
+elif data == "back_to_settings":
+    keyboard = [
+        [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+        [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
+        [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
+        [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
+        [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
+        [InlineKeyboardButton("Tutup", callback_data="close")],
     ]
     await query.message.edit_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
 
@@ -261,7 +256,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         cid = int(data.split("_")[2])
         try:
             chat = await client.get_chat(cid)
-            mode = await db.get_channel_mode(cid)
+            mode = await db.get_channel_mode(cd)
             status = "🟢 ᴏɴ" if mode == "on" else "🔴 ᴏғғ"
             new_mode = "ᴏғғ" if mode == "on" else "on"
             buttons = [
