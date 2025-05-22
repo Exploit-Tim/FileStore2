@@ -1,4 +1,4 @@
-# Copyright (C) 2025 by Codeflix-Bots@Github, < https://github.com/Codeflix-Bots >.
+RT# Copyright (C) 2025 by Codeflix-Bots@Github, < https://github.com/Codeflix-Bots >.
 # This file is part of < https://github.com/Codeflix-Bots/FileStore > project,
 # and is released under the MIT License.
 # Please see < https://github.com/Codeflix-Bots/FileStore/blob/master/LICENSE >
@@ -239,7 +239,10 @@ async def cb_handler(client: Bot, query: CallbackQuery):
 #===MEm====#
     
     elif data == "fsub_back":
-        channels = await db.show_channels()
+    channels = await db.show_channels()
+    if not channels: # Pastikan indentasi ini benar
+        await query.message.edit_text("Tidak ada channel yang tersedia.")
+    else:
         buttons = []
         for cid in channels:
             try:
@@ -253,6 +256,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             "sᴇʟᴇᴄᴛ ᴀ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴛᴏɢɢʟᴇ ɪᴛs ғᴏʀᴄᴇ-sᴜʙ ᴍᴏᴅᴇ:",
             reply_markup=InlineKeyboardMarkup(buttons)
         )
+
     elif data.startswith("rfs_ch_"):
         cid = int(data.split("_")[2])
         try:
