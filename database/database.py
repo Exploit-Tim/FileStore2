@@ -32,7 +32,7 @@ class Rohit:
         self.rqst_fsub_data = self.database['request_forcesub']
         self.rqst_fsub_Channel_data = self.database['request_forcesub_channel']
         self.konten_channel_data = self.database['konten_channel']
-        
+        self.konten_channel_data = self.database['pict_links']
 
 
     # USER DATA
@@ -205,5 +205,23 @@ class Rohit:
     async def get_konten_channel(self):
         data = await self.konten_channel_data.find_one({"_id": 1})
         return data.get("channel_id", 0) if data else 0
+
+# PICT LINK SETTINGS
+    async def get_pict_links(self):
+        data = await self.database['pict_links'].find_one({"_id": 1})
+        return {
+            "welcome": data.get("welcome", START_PIC),
+            "force": data.get("force", FORCE_PIC)
+        } if data else {
+            "welcome": START_PIC,
+            "force": FORCE_PIC
+        }
+
+    async def set_pict_link(self, pict_type: str, url: str):
+        await self.database['pict_links'].update_one(
+            {"_id": 1},
+            {"$set": {pict_type: url}},
+            upsert=True
+        )
 
 db = Rohit(DB_URI, DB_NAME)
