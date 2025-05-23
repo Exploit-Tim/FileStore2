@@ -259,6 +259,10 @@ async def not_joined(client: Client, message: Message):
             ])
         except IndexError:
             pass
+            
+        picts = await db.get_pict_links()
+        start_pic_url = picts["force"]
+        
         await message.reply_photo(
             photo=force_pic_url,
             caption=FORCE_MSG.format(
