@@ -194,7 +194,7 @@ class Rohit:
         else:
             #print(f"Channel {channel_id} NOT found in the database.")
             return False
-
+# KONTEN ID SETTINGS
     async def set_konten_channel_id(self, chat_id: int):
         await self.konten_channel_data.update_one(
             {"_id": 1},
@@ -206,6 +206,14 @@ class Rohit:
         data = await self.konten_channel_data.find_one({"_id": 1})
         return data.get("channel_id", 0) if data else 0
 
+    async def delete_konten_channel(self):
+        await self.konten_channel_data.update_one(
+            {"_id": 1},
+            {"$set": {"channel_id": 0}},
+            upsert=True
+        )
+
+    
 # PICT LINK SETTINGS
     async def get_pict_links(self):
         data = await self.database['pict_links'].find_one({"_id": 1})
