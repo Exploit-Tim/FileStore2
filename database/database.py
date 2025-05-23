@@ -5,7 +5,7 @@ import motor, asyncio
 import motor.motor_asyncio
 import time
 import pymongo, os
-from config import DB_URI, DB_NAME
+from config import DB_URI, DB_NAME, START_PIC, FORCE_PIC
 from bot import Bot
 import logging
 from datetime import datetime, timedelta
