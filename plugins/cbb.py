@@ -512,26 +512,24 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             ])
         )
 
+#MENU KONTEN
+
     elif data == "konten":
-        channels = await db.show_channels()
+        ch_id = await db.get_konten_channel()
         keyboard = []
     
-        if not channels:
+        if not ch_id:
             text = "<b>📢 Channel konten belum ada.</b>\n\nSilakan tambahkan channel konten terlebih dahulu."
             keyboard.append([InlineKeyboardButton("➕ Tambah Konten", callback_data="konten_add")])
         else:
-            text = "<b>📢 Daftar Channel Konten:</b>\nKlik ID channel untuk melihat detail atau mengganti."
-    
-            for ch_id in channels:
-                try:
-                    chat = await client.get_chat(ch_id)
-                    btn_text = f"{chat.title} ({ch_id})"
-                except Exception:
-                    btn_text = f"⚠️ Channel Tidak Terdeteksi ({ch_id})"
-    
-                keyboard.append([InlineKeyboardButton(btn_text, callback_data=f"konten_info:{ch_id}")])
-    
-            keyboard.append([InlineKeyboardButton("➕ Tambah Konten", callback_data="konten_add")])
+            try:
+                chat = await client.get_chat(ch_id)
+                btn_text = f"{chat.title} ({ch_id})"
+            except Exception:
+                btn_text = f"⚠️ Channel Tidak Terdeteksi ({ch_id})"
+            
+            text = "<b>📢 Channel Konten Saat Ini:</b>\nKlik untuk mengganti."
+            keyboard.append([InlineKeyboardButton(btn_text, callback_data=f"konten_info:{ch_id}")])
     
         keyboard.append([InlineKeyboardButton("‹ Kembali", callback_data="back_to_settings")])
         await query.message.edit_text(text, parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(keyboard))
