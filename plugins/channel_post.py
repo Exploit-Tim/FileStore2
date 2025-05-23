@@ -6,7 +6,7 @@ from pyrogram.errors import FloodWait
 from bot import Bot
 from helper_func import encode, admin
 from pyrogram.enums import ParseMode, ChatAction, ChatMemberStatus, ChatType
-from database.database import *
+from database.database import db
 
 
 @Bot.on_message(filters.private & admin & ~filters.command([
@@ -18,8 +18,8 @@ async def channel_post(client: Client, message: Message):
     reply_text = await message.reply_text("Tunggu...", quote=True)
 
     # Ambil konten channel ID dari database
-    KONTEN_CHANNEL_ID = await database.get_konten_channel()
-
+    KONTEN_CHANNEL_ID = await db.get_konten_channel()
+    
     try:
         post_message = await message.copy(
             chat_id=client.db_channel.id,
