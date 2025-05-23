@@ -432,35 +432,35 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             ])
         )
 
-    elif data == "set_konten_channel":
-    await query.message.edit_text(
-        "Masukkan ID channel konten (gunakan format seperti <code>-1001234567890</code>):",
-        parse_mode=ParseMode.HTML
-    )
-
-    try:
-        response = await client.listen(query.from_user.id, timeout=60)  # timeout agar tidak menunggu selamanya
-        new_konten_id = int(response.text)
-
-        # Cek validitas channel
+    elif data == "konten":
+        await query.message.edit_text(
+            "Masukkan ID channel konten (gunakan format seperti <code>-1001234567890</code>):",
+            parse_mode=ParseMode.HTML
+        )
+    
         try:
-            chat = await client.get_chat(new_konten_id)
-            if chat.type != ChatType.CHANNEL:
-                return await response.reply_text("❌ Hanya channel yang diperbolehkan!")
-
-            member = await client.get_chat_member(chat.id, "me")
-            if member.status not in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
-                return await response.reply_text("❌ Bot harus menjadi admin di channel tersebut.")
-
-            # Simpan ke database atau variable global
-            await db.set_konten_channel_id(new_konten_id)  # tambahkan fungsi ini di database.py
-            await response.reply_text(f"✅ Channel konten berhasil diatur: <b>{chat.title}</b>", parse_mode=ParseMode.HTML)
-
-        except Exception as e:
-            await response.reply_text(f"❌ Gagal validasi channel: {e}")
-
-    except asyncio.TimeoutError:
-        await query.message.reply_text("⏰ Waktu habis. Silakan coba lagi.")
+            response = await client.listen(query.from_user.id, timeout=60)  # timeout agar tidak menunggu selamanya
+            new_konten_id = int(response.text)
+    
+            # Cek validitas channel
+            try:
+                chat = await client.get_chat(new_konten_id)
+                if chat.type != ChatType.CHANNEL:
+                    return await response.reply_text("❌ Hanya channel yang diperbolehkan!")
+    
+                member = await client.get_chat_member(chat.id, "me")
+                if member.status not in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
+                    return await response.reply_text("❌ Bot harus menjadi admin di channel tersebut.")
+    
+                # Simpan ke database atau variable global
+                await db.set_konten_channel_id(new_konten_id)  # tambahkan fungsi ini di database.py
+                await response.reply_text(f"✅ Channel konten berhasil diatur: <b>{chat.title}</b>", parse_mode=ParseMode.HTML)
+    
+            except Exception as e:
+                await response.reply_text(f"❌ Gagal validasi channel: {e}")
+    
+        except asyncio.TimeoutError:
+            await query.message.reply_text("⏰ Waktu habis. Silakan coba lagi.")
 
 
     elif data == "db_id":
