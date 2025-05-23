@@ -7,7 +7,7 @@
 from pyrogram import Client
 from bot import Bot
 from config import *
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from pyrogram.types import Message, InputMediaPhoto, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from database.database import *
 from pyrogram.enums import ParseMode, ChatAction, ChatMemberStatus, ChatType
 import speedtest
@@ -602,43 +602,81 @@ async def cb_handler(client: Bot, query: CallbackQuery):
 
 #MENU PICT
 
-    elif data == "menu_pict":
-        links = await db.get_pict_links()
+    # Menu utama untuk Pict
+    if data == "menu_pict":
         keyboard = [
             [InlineKeyboardButton("📸 Pict Welcome", callback_data="show_welcome_pict")],
             [InlineKeyboardButton("🔐 Pict Force", callback_data="show_force_pict")],
             [InlineKeyboardButton("🔙 Kembali", callback_data="back_to_settings")]
         ]
-        text = "<b>🖼 Pilih jenis gambar untuk ditampilkan atau diganti link-nya.</b>"
-        await query.message.edit_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
+        await query.message.edit_text(
+            "<b>🖼 Pilih jenis gambar untuk ditampilkan atau diganti link-nya.</b>",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
+    # Menampilkan Welcome Pict
     elif data == "show_welcome_pict":
         links = await db.get_pict_links()
         keyboard = [
             [InlineKeyboardButton("🔁 Ganti Link", callback_data="change_welcome_link")],
             [InlineKeyboardButton("🔙 Kembali", callback_data="menu_pict")]
         ]
-        await query.message.reply_photo(links["welcome"], caption=f"<b>🌄 Link Aktif:</b>\n{links['welcome']}", reply_markup=InlineKeyboardMarkup(keyboard))
+        await query.message.edit_media(
+            media=InputMediaPhoto(
+                media=links["welcome"],
+                caption=f"<b>🌄 Link Aktif:</b>\n{links['welcome']}",
+                parse_mode="html"
+            ),
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
+    # Menampilkan Force Pict
     elif data == "show_force_pict":
         links = await db.get_pict_links()
         keyboard = [
             [InlineKeyboardButton("🔁 Ganti Link", callback_data="change_force_link")],
             [InlineKeyboardButton("🔙 Kembali", callback_data="menu_pict")]
         ]
-        await query.message.reply_photo(links["force"], caption=f"<b>🔒 Link Aktif:</b>\n{links['force']}", reply_markup=InlineKeyboardMarkup(keyboard))
+        await query.message.edit_media(
+            media=InputMediaPhoto(
+                media=links["force"],
+                caption=f"<b>🔒 Link Aktif:</b>\n{links['force']}",
+                parse_mode="html"
+            ),
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
+    # Ganti link Welcome Pict
     elif data == "change_welcome_link":
-        await query.message.edit_text("Kirim link baru untuk <b>Pict Welcome</b>.")
+        await query.message.edit_text("📝 Kirim link baru untuk <b>Pict Welcome</b>:")
         response = await client.listen(query.from_user.id)
         await db.set_pict_link("welcome", response.text)
-        await response.reply_text("✅ Link Pict Welcome berhasil diubah!")
+        await response.reply_text(
+            "✅ Link Pict Welcome berhasil diubah!",
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Kembali", callback_data="menu_pict")]])
+        )
 
+    # Ganti link Force Pict
     elif data == "change_force_link":
-        await query.message.edit_text("Kirim link baru untuk <b>Pict Force</b>.")
+        await query.message.edit_text("📝 Kirim link baru untuk <b>Pict Force</b>:")
         response = await client.listen(query.from_user.id)
         await db.set_pict_link("force", response.text)
-        await response.reply_text("✅ Link Pict Force berhasil diubah!")
+        await response.reply_text(
+            "✅ Link Pict Force berhasil diubah!",
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Kembali", callback_data="menu_pict")]])
+        )
+
+    # Kembali ke settings utama (optional, jika punya)
+    elif data == "back_to_settings":
+        keyboard = [
+            [InlineKeyboardButton("⚙️ Ganti Auto Delete", callback_data="set_autodelete")],
+            [InlineKeyboardButton("🖼 Pict Settings", callback_data="menu_pict")],
+            [InlineKeyboardButton("❌ Tutup", callback_data="close")]
+        ]
+        await query.message.edit_text(
+            "<b>⚙️ Settings Menu:</b>\nSilakan pilih pengaturan yang ingin kamu ubah.",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
             
     elif data == "back_to_settings":
