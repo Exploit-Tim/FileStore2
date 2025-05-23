@@ -153,11 +153,11 @@ async def start_command(client: Client, message: Message):
                 print(f"Error updating notification with 'Get File Again' button: {e}")
 
         # ⬅️ Tambahkan ini supaya tetap kirim pesan start setelah kirim file
-        await send_start_photo(client, message)
+       # await send_start_photo(client, message)
         return
 
     # Jika start biasa (tanpa argumen)
-    await send_start_photo(client, message)
+    #await send_start_photo(client, message)
 
 
 #=====================================================================================##
