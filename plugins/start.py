@@ -32,6 +32,7 @@ BAN_SUPPORT = f"{BAN_SUPPORT}"
 async def start_command(client: Client, message: Message):
     user_id = message.from_user.id
 
+    # Check banned
     banned_users = await db.get_ban_users()
     if user_id in banned_users:
         return await message.reply_text(
@@ -42,11 +43,14 @@ async def start_command(client: Client, message: Message):
             )
         )
 
+    # Check subscription
     if not await is_subscribed(client, user_id):
         return await not_joined(client, message)
 
+    # Set auto delete
     FILE_AUTO_DELETE = await db.get_del_timer()
 
+    # Add user
     if not await db.present_user(user_id):
         try:
             await db.add_user(user_id)
@@ -58,27 +62,24 @@ async def start_command(client: Client, message: Message):
         try:
             base64_string = text.split(" ", 1)[1]
         except IndexError:
-            return
+            return await send_start_photo(client, message)
 
-        string = await decode(base64_string)
-        argument = string.split("-")
+        try:
+            string = await decode(base64_string)
+            argument = string.split("-")
 
-        ids = []
-        if len(argument) == 3:
-            try:
+            ids = []
+            if len(argument) == 3:
                 start = int(int(argument[1]) / abs(client.db_channel.id))
                 end = int(int(argument[2]) / abs(client.db_channel.id))
                 ids = range(start, end + 1) if start <= end else list(range(start, end - 1, -1))
-            except Exception as e:
-                print(f"Error decoding IDs: {e}")
-                return
-
-        elif len(argument) == 2:
-            try:
+            elif len(argument) == 2:
                 ids = [int(int(argument[1]) / abs(client.db_channel.id))]
-            except Exception as e:
-                print(f"Error decoding ID: {e}")
+            else:
                 return
+        except Exception as e:
+            print(f"Error decoding: {e}")
+            return
 
         temp_msg = await message.reply("<b>Please wait...</b>")
         try:
@@ -89,7 +90,7 @@ async def start_command(client: Client, message: Message):
             return
         finally:
             await temp_msg.delete()
- 
+
         codeflix_msgs = []
 
         for msg in messages:
@@ -122,7 +123,7 @@ async def start_command(client: Client, message: Message):
 
         if FILE_AUTO_DELETE > 0:
             notification_msg = await message.reply(
-                f"<b>Tʜɪs Fɪʟᴇ ᴡɪʟʟ ʙᴇ Dᴇʟᴇᴛᴇᴅ ɪɴ  {get_exp_time(FILE_AUTO_DELETE)}. Pʟᴇᴀsᴇ sᴀᴠᴇ ᴏʀ ғᴏʀᴡᴀʀᴅ ɪᴛ ᴛᴏ ʏᴏᴜʀ sᴀᴠᴇᴅ ᴍᴇssᴀɢᴇs ʙᴇғᴏʀᴇ ɪᴛ ɢᴇᴛs Dᴇʟᴇᴛᴇᴅ.</b>"
+                f"<b>Tʜɪs Fɪʟᴇ ᴡɪʟʟ ʙᴇ Dᴇʟᴇᴛᴇᴅ ɪɴ {get_exp_time(FILE_AUTO_DELETE)}. Pʟᴇᴀsᴇ sᴀᴠᴇ ᴏʀ ғᴏʀᴡᴀʀᴅ ɪᴛ ᴛᴏ ʏᴏᴜʀ sᴀᴠᴇᴅ ᴍᴇssᴀɢᴇs ʙᴇғᴏʀᴇ ɪᴛ ɢᴇᴛs Dᴇʟᴇᴛᴇᴅ.</b>"
             )
 
             await asyncio.sleep(FILE_AUTO_DELETE)
@@ -151,22 +152,12 @@ async def start_command(client: Client, message: Message):
             except Exception as e:
                 print(f"Error updating notification with 'Get File Again' button: {e}")
 
-        picts = await db.get_pict_links()
-        start_pic_url = picts["welcome"]
+        # ⬅️ Tambahkan ini supaya tetap kirim pesan start setelah kirim file
+        await send_start_photo(client, message)
+        return
 
-        await message.reply_photo(
-            photo=start_pic_url,
-            caption=START_MSG.format(
-                first=message.from_user.first_name,
-                last=message.from_user.last_name,
-                username=None if not message.from_user.username else '@' + message.from_user.username,
-                mention=message.from_user.mention,
-                id=message.from_user.id
-            ),
-            reply_markup=reply_markup,
-            message_effect_id=5104841245755180586
-        )
-
+    # Jika start biasa (tanpa argumen)
+    await send_start_photo(client, message)
 
 
 #=====================================================================================##
