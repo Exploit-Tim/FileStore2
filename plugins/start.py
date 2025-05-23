@@ -157,7 +157,7 @@ async def start_command(client: Client, message: Message):
         return
 
     # Jika start biasa (tanpa argumen)
-    #await send_start_photo(client, message)
+    await send_start_photo(client, message)
 
 
 #=====================================================================================##
