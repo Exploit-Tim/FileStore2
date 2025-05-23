@@ -99,7 +99,7 @@ async def channel_post(client: Client, message: Message):
     reply_text = await message.reply_text("Tunggu...", quote=True)
 
     # Ambil konten channel ID dari database
-    KONTEN_CHANNEL_ID = await db.get_konten_channel()
+    KONTEN_CHANNEL_ID = await database.get_konten_channel()
 
     try:
         post_message = await message.copy(
