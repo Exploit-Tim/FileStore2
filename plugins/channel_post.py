@@ -86,7 +86,7 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait
 from bot import Bot
 from helper_func import encode, admin
-from database import db  # pastikan ini diimpor
+from database.database import 
 
 
 @Bot.on_message(filters.private & admin & ~filters.command([
