@@ -525,5 +525,5 @@ async def cb_handler(client: Bot, query: CallbackQuery):
     elif data == "custom_caption":
         await query.message.edit_text("Belum tersedia.")
 
-    elif data == "konten":
+    elif data == "konen":
         await query.message.edit_text("Belum tersedia.")
