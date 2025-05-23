@@ -624,8 +624,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         await query.message.edit_media(
             media=InputMediaPhoto(
                 media=links["welcome"],
-                caption=f"<b>🌄 Link Aktif:</b>\n{links['welcome']}",
-                parse_mode="HTML"
+                caption=f"<b>🌄 Link Aktif:</b>\n{links['welcome']}"
             ),
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
@@ -640,8 +639,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         await query.message.edit_media(
             media=InputMediaPhoto(
                 media=links["force"],
-                caption=f"<b>🔒 Link Aktif:</b>\n{links['force']}",
-                parse_mode="HTML"
+                caption=f"<b>🔒 Link Aktif:</b>\n{links['force']}"
             ),
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
@@ -665,19 +663,6 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             "✅ Link Pict Force berhasil diubah!",
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Kembali", callback_data="menu_pict")]])
         )
-
-    # Kembali ke settings utama (optional, jika punya)
-    elif data == "back_to_settings":
-        keyboard = [
-            [InlineKeyboardButton("⚙️ Ganti Auto Delete", callback_data="set_autodelete")],
-            [InlineKeyboardButton("🖼 Pict Settings", callback_data="menu_pict")],
-            [InlineKeyboardButton("❌ Tutup", callback_data="close")]
-        ]
-        await query.message.edit_text(
-            "<b>⚙️ Settings Menu:</b>\nSilakan pilih pengaturan yang ingin kamu ubah.",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
-
             
     elif data == "back_to_settings":
         keyboard = [
