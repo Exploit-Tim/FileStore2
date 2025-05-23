@@ -513,91 +513,93 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         )
 
     elif data == "konten":
-        # Ambil daftar channel konten
         channels = await db.show_channels()
+        keyboard = []
+    
         if not channels:
-            konten_info = "<b>📢 Channel konten belum ada.</b>\n\n"
+            text = "<b>📢 Channel konten belum ada.</b>\n\nSilakan tambahkan channel konten terlebih dahulu."
+            keyboard.append([InlineKeyboardButton("➕ Tambah Konten", callback_data="konten_add")])
         else:
-            konten_info = "<b>📢 Daftar Channel Konten:</b>\n"
+            text = "<b>📢 Daftar Channel Konten:</b>\nKlik ID channel untuk melihat detail atau mengganti."
+    
             for ch_id in channels:
                 try:
                     chat = await client.get_chat(ch_id)
-                    url = f"https://t.me/{chat.username}" if chat.username else f"https://t.me/c/{str(chat.id)[4:]}"
-                    konten_info += f"🔹 <a href='{url}'>{chat.title}</a> (<code>{ch_id}</code>)\n"
+                    btn_text = f"{chat.title} ({ch_id})"
                 except Exception:
-                    konten_info += f"⚠️ Tidak dapat mengambil info channel <code>{ch_id}</code>\n"
-            konten_info += "\n"
+                    btn_text = f"⚠️ Channel Tidak Terdeteksi ({ch_id})"
+    
+                keyboard.append([InlineKeyboardButton(btn_text, callback_data=f"konten_info:{ch_id}")])
+    
+            keyboard.append([InlineKeyboardButton("➕ Tambah Konten", callback_data="konten_add")])
+    
+        keyboard.append([InlineKeyboardButton("‹ Kembali", callback_data="back_to_settings")])
+        await query.message.edit_text(text, parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(keyboard))
 
-        konten_info += "Masukkan ID channel konten (gunakan format seperti <code>-1001234567890</code>):"
+    elif data.startswith("konten_info:"):
+        ch_id = int(data.split(":")[1])
+        try:
+            chat = await client.get_chat(ch_id)
+            text = (
+                f"<b>📢 Info Channel:</b>\n"
+                f"• Nama: <b>{chat.title}</b>\n"
+                f"• ID: <code>{ch_id}</code>\n\n"
+                f"Ingin mengganti channel ini?"
+            )
+        except Exception:
+            text = f"⚠️ Channel tidak ditemukan untuk ID <code>{ch_id}</code>\nIngin mengganti dengan channel lain?"
+    
+        keyboard = [
+            [InlineKeyboardButton("🔁 Ganti", callback_data="konten_add")],
+            [InlineKeyboardButton("‹ Kembali", callback_data="konten")],
+        ]
+        await query.message.edit_text(text, parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(keyboard))
 
+    elif data == "konten_add":
         await query.message.edit_text(
-            konten_info,
+            "Masukkan ID channel konten (format seperti <code>-1001234567890</code>):",
             parse_mode=ParseMode.HTML,
-            disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("‹ Kembali", callback_data="back_to_settings")]
+                [InlineKeyboardButton("‹ Batal", callback_data="konten")]
             ])
         )
-
+    
+        response = await client.listen(query.from_user.id)  # tanpa timeout
+    
+        if response.text == "/cancel" or response.text.lower() in ["batal", "kembali"]:
+            await query.message.reply_text("❌ Dibatalkan.", reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("‹ Kembali", callback_data="konten")]
+            ]))
+            return
+    
         try:
-            response = await client.listen(query.from_user.id, timeout=60)
-
-            try:
-                new_konten_id = int(response.text)
-            except ValueError:
-                await response.reply_text(
-                    "❌ Format ID tidak valid. Harus berupa angka.",
-                    reply_markup=InlineKeyboardMarkup([
-                        [InlineKeyboardButton("‹ Kembali", callback_data="konten")]
-                    ])
-                )
-                return
-
-            try:
-                chat = await client.get_chat(new_konten_id)
-                if chat.type != ChatType.CHANNEL:
-                    await response.reply_text(
-                        "❌ Hanya channel yang diperbolehkan!",
-                        reply_markup=InlineKeyboardMarkup([
-                            [InlineKeyboardButton("‹ Kembali", callback_data="konten")]
-                        ])
-                    )
-                    return
-
-                member = await client.get_chat_member(chat.id, "me")
-                if member.status not in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
-                    await response.reply_text(
-                        "❌ Bot harus menjadi admin di channel tersebut.",
-                        reply_markup=InlineKeyboardMarkup([
-                            [InlineKeyboardButton("‹ Kembali", callback_data="konten")]
-                        ])
-                    )
-                    return
-
-                await db.add_konten_channel_id(new_konten_id)
-                await response.reply_text(
-                    f"✅ Channel konten berhasil ditambahkan: <b>{chat.title}</b>",
-                    parse_mode=ParseMode.HTML,
-                    reply_markup=InlineKeyboardMarkup([
-                        [InlineKeyboardButton("‹ Kembali", callback_data="konten")]
-                    ])
-                )
-
-            except Exception as e:
-                await response.reply_text(
-                    f"❌ Gagal validasi channel: {e}",
-                    reply_markup=InlineKeyboardMarkup([
-                        [InlineKeyboardButton("‹ Kembali", callback_data="konten")]
-                    ])
-                )
-
-        except asyncio.TimeoutError:
-            await query.message.reply_text(
-                "⏰ Waktu habis. Silakan coba lagi.",
+            new_konten_id = int(response.text)
+            chat = await client.get_chat(new_konten_id)
+    
+            if chat.type != ChatType.CHANNEL:
+                raise ValueError("Bukan channel.")
+    
+            member = await client.get_chat_member(chat.id, "me")
+            if member.status not in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
+                raise ValueError("Bot bukan admin.")
+    
+            await db.add_konten_channel_id(new_konten_id)
+            await response.reply_text(
+                f"✅ Channel berhasil ditambahkan: <b>{chat.title}</b>",
+                parse_mode=ParseMode.HTML,
                 reply_markup=InlineKeyboardMarkup([
                     [InlineKeyboardButton("‹ Kembali", callback_data="konten")]
                 ])
             )
+    
+        except Exception as e:
+            await response.reply_text(
+                f"❌ Gagal menambahkan channel: {e}",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton("‹ Kembali", callback_data="konten")]
+                ])
+            )
+
             
     elif data == "back_to_settings":
         keyboard = [
