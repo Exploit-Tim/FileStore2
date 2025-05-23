@@ -583,7 +583,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             if member.status not in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
                 raise ValueError("Bot bukan admin.")
     
-            await db.add_konten_channel_id(new_konten_id)
+            await db.set_konten_channel_id(new_konten_id)
             await response.reply_text(
                 f"✅ Channel berhasil ditambahkan: <b>{chat.title}</b>",
                 parse_mode=ParseMode.HTML,
