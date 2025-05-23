@@ -97,8 +97,11 @@ KONTEN_CHANNEL_ID = await db.get_konten_channel()
     'add_admin', 'deladmin', 'admins']))
 async def channel_post(client: Client, message: Message):
     reply_text = await message.reply_text("Tunggu...", quote=True)
+
+    # Ambil konten channel ID dari database
+    KONTEN_CHANNEL_ID = await db.get_konten_channel()
+
     try:
-        # Copy ke channel utama
         post_message = await message.copy(
             chat_id=client.db_channel.id,
             caption="ini caption contoh\n\np",
@@ -124,7 +127,6 @@ async def channel_post(client: Client, message: Message):
         [InlineKeyboardButton("📥 Save File", url=link)]
     ])
 
-    # Kirim ke channel konten (jika ada)
     konten_status = "❌"
     konten_error = ""
 
@@ -154,7 +156,6 @@ async def channel_post(client: Client, message: Message):
             print(e)
             konten_error = "⚠️ Gagal meneruskan ke channel konten. Periksa ID-nya."
 
-    # Balasan akhir
     final_message = f"<b>Here is your link</b>\n\n{link}\n\n📤 Teruskan ke Channel Konten: {konten_status}"
     if konten_error:
         final_message += f"\n{konten_error}"
@@ -164,4 +165,3 @@ async def channel_post(client: Client, message: Message):
         reply_markup=reply_markup,
         disable_web_page_preview=True
     )
-
