@@ -55,6 +55,9 @@ async def start_command(client: Client, message: Message):
 
     text = message.text
     if len(text) > 7:
+        base64_string = text.split(" ", 1)[1]
+        string = await decode(base64_string)
+        argument = string.split("-")
         # HANDLE START WITH PAYLOAD
         ...
     else:
