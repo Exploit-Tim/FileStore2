@@ -106,6 +106,8 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         ]
         await query.message.edit_text(f"<b>⚡ Current Admin List:</b>\n\n{admin_list}", reply_markup=InlineKeyboardMarkup(keyboard))
 
+###-------------MENU ADMIN-------------###
+   
     elif data == "tambah_admin":
         await query.message.edit_text("Silakan masukkan ID admin baru:")
         response = await client.listen(query.from_user.id)
@@ -178,7 +180,9 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             [InlineKeyboardButton("𝗧𝗨𝗧𝗨𝗣", callback_data="close")],
         ]
         await query.message.edit_text("<b>𝗠𝗲𝗻𝘂 𝗦𝗲𝘁𝘁𝗶𝗻𝗴𝘀</b>", parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(keyboard))
-        
+
+###-------------MENU FSUB-------------###
+    
     elif data == "daftar_fsub":
          channels = await db.show_channels()
          if not channels:
@@ -438,6 +442,8 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         await query.message.edit_text("<b>𝗠𝗲𝗻𝘂 𝗦𝗲𝘁𝘁𝗶𝗻𝗴𝘀</b>", parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(keyboard))
 
     
+###-------------MENU TIME-------------### 
+    
     elif data == "time_delete":
         current_time = await db.get_del_timer()
         await query.message.edit_text(
@@ -485,6 +491,8 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         await query.message.edit_text("<b>𝗠𝗲𝗻𝘂 𝗦𝗲𝘁𝘁𝗶𝗻𝗴𝘀</b>", parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(keyboard))
 
     
+ ###-------------MENU SERVER-------------###
+    
     elif data == "server_info":
         await query.message.edit_text(
             "<b>🔄 Mengambil informasi server...</b>"
@@ -512,7 +520,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             ])
         )
 
-#MENU KONTEN
+###-------------MENU KONTEN-------------###
 
     elif data == "konten":
         ch_id = await db.get_konten_channel()
@@ -528,11 +536,24 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             except Exception:
                 btn_text = f"⚠️ Channel Tidak Terdeteksi ({ch_id})"
             
-            text = "<b>📢 Channel Konten Saat Ini:</b>\nKlik untuk mengganti."
+            text = "<b>📢 Channel Konten Saat Ini:</b>\nKlik untuk mengganti atau hapus."
             keyboard.append([InlineKeyboardButton(btn_text, callback_data=f"konten_info:{ch_id}")])
-    
+            keyboard.append([InlineKeyboardButton("🗑 Hapus Channel", callback_data="konten_delete")])  # Tambahan tombol hapus
+
         keyboard.append([InlineKeyboardButton("‹ Kembali", callback_data="back_to_settings")])
         await query.message.edit_text(text, parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(keyboard))
+
+    elif data == "konten_delete":
+        await db.delete_konten_channel()  # Mengatur ID ke 0
+    
+        await query.message.edit_text(
+            "✅ Channel konten berhasil dihapus.",
+            parse_mode=ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("‹ Kembali", callback_data="konten")]
+            ])
+        )
+
 
     elif data.startswith("konten_info:"):
         ch_id = int(data.split(":")[1])
@@ -598,8 +619,8 @@ async def cb_handler(client: Bot, query: CallbackQuery):
                 ])
             )
 
-#MENU PICT
-
+###-------------MENU PICT-------------###
+    
     # Menu utama untuk Pict
     if data == "menu_pict":
         keyboard = [
