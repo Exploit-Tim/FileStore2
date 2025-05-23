@@ -88,7 +88,6 @@ from bot import Bot
 from helper_func import encode, admin
 from database import db  # pastikan ini diimpor
 
-KONTEN_CHANNEL_ID = await db.get_konten_channel()
 
 @Bot.on_message(filters.private & admin & ~filters.command([
     'start', 'commands', 'users', 'settings', 'broadcast', 'batch', 'custom_batch',
