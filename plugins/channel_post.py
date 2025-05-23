@@ -87,7 +87,7 @@ from pyrogram.errors import FloodWait
 from bot import Bot
 from helper_func import encode, admin
 
-KONTEN_CHANNEL_ID = 0  # <- GANTI ini sesuai kebutuhan
+KONTEN_CHANNEL_ID = await db.get_konten_channel()
 
 @Bot.on_message(filters.private & admin & ~filters.command([
     'start', 'commands', 'users', 'settings', 'broadcast', 'batch', 'custom_batch',
