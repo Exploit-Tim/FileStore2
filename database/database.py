@@ -31,7 +31,7 @@ class Rohit:
         self.fsub_data = self.database['fsub']   
         self.rqst_fsub_data = self.database['request_forcesub']
         self.rqst_fsub_Channel_data = self.database['request_forcesub_channel']
-        
+        self.konten_channel_data = self.database['konten_channel']
 
 
     # USER DATA
@@ -194,5 +194,14 @@ class Rohit:
             #print(f"Channel {channel_id} NOT found in the database.")
             return False
 
+    async def set_konten_channel(self, chat_id: int):
+         await self.konten_channel_data.update_one(
+             {"_id": 1},
+             {"$set": {"channel_id": chat_id}},
+             upsert=True
+         )
+    async def get_konten_channel(self):
+         data = await self.konten_channel_data.find_one({"_id": 1})
+         return data.get("channel_id", 0) if data else 0
 
 db = Rohit(DB_URI, DB_NAME)
