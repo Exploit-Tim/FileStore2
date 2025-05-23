@@ -22,7 +22,7 @@ async def settings_command(client: Client, message: Message):
         ],
         [
             InlineKeyboardButton("𝗠𝗘𝗦𝗦𝗔𝗚𝗘", callback_data="set_force_msg"),
-            InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="set_welcome"),
+            InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="menu_pict"),
         ],
         [InlineKeyboardButton("𝗖𝗨𝗦𝗧𝗢𝗠 𝗖𝗔𝗣𝗧𝗜𝗢𝗡", callback_data="custom_caption")],
         [InlineKeyboardButton("𝗞𝗢𝗡𝗧𝗘𝗡", callback_data="konten")],
