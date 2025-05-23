@@ -439,29 +439,79 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         )
     
         try:
-            response = await client.listen(query.from_user.id, timeout=60)  # timeout agar tidak menunggu selamanya
-            new_konten_id = int(response.text)
+            response = await client.listen(query.from_user.id, timeout=60)  # Tunggu input user
     
-            # Cek validitas channel
+            try:
+                new_konten_id = int(response.text)
+            except ValueError:
+                await response.reply_text(
+                    "❌ Format ID tidak valid. Harus berupa angka.",
+                    reply_markup=InlineKeyboardMarkup([
+                        [InlineKeyboardButton("‹ Kembali", callback_data="back_to_settings")]
+                    ])
+                )
+                return
+    
             try:
                 chat = await client.get_chat(new_konten_id)
+    
                 if chat.type != ChatType.CHANNEL:
-                    return await response.reply_text("❌ Hanya channel yang diperbolehkan!")
+                    await response.reply_text(
+                        "❌ Hanya channel yang diperbolehkan!",
+                        reply_markup=InlineKeyboardMarkup([
+                            [InlineKeyboardButton("‹ Kembali", callback_data="back_to_settings")]
+                        ])
+                    )
+                    return
     
                 member = await client.get_chat_member(chat.id, "me")
-                if member.status not in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
-                    return await response.reply_text("❌ Bot harus menjadi admin di channel tersebut.")
     
-                # Simpan ke database atau variable global
-                await db.set_konten_channel_id(new_konten_id)  # tambahkan fungsi ini di database.py
-                await response.reply_text(f"✅ Channel konten berhasil diatur: <b>{chat.title}</b>", parse_mode=ParseMode.HTML)
+                if member.status not in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
+                    await response.reply_text(
+                        "❌ Bot harus menjadi admin di channel tersebut.",
+                        reply_markup=InlineKeyboardMarkup([
+                            [InlineKeyboardButton("‹ Kembali", callback_data="back_to_settings")]
+                        ])
+                    )
+                    return
+    
+                await db.set_konten_channel_id(new_konten_id)  # Simpan ke database
+                await response.reply_text(
+                    f"✅ Channel konten berhasil diatur: <b>{chat.title}</b>",
+                    parse_mode=ParseMode.HTML,
+                    reply_markup=InlineKeyboardMarkup([
+                        [InlineKeyboardButton("‹ Kembali", callback_data="back_to_settings")]
+                    ])
+                )
     
             except Exception as e:
-                await response.reply_text(f"❌ Gagal validasi channel: {e}")
+                await response.reply_text(
+                    f"❌ Gagal validasi channel: {e}",
+                    reply_markup=InlineKeyboardMarkup([
+                        [InlineKeyboardButton("‹ Kembali", callback_data="back_to_settings")]
+                    ])
+                )
+
     
         except asyncio.TimeoutError:
-            await query.message.reply_text("⏰ Waktu habis. Silakan coba lagi.")
-
+            await query.message.reply_text(
+                "⏰ Waktu habis. Silakan coba lagi.",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton("‹ Kembali", callback_data="back_to_settings")]
+                ])
+            )
+    elif data == "back_to_settings":
+        keyboard = [
+            [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
+            [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
+            [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
+            [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
+            [InlineKeyboardButton("Server Info", callback_data="server_info")],
+            [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
+            [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
+            [InlineKeyboardButton("Tutup", callback_data="close")],
+        ]
+        await query.message.edit_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
 
     elif data == "db_id":
         await query.message.edit_text("Belum tersedia.")
