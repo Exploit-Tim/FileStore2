@@ -117,16 +117,29 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             await response.reply_text("Gagal menambahkan admin baru. Pastikan ID admin valid.")
 
         keyboard = [
-            [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
-            [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
-            [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
-            [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
-            [InlineKeyboardButton("Server Info", callback_data="server_info")],
-            [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
-            [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
-            [InlineKeyboardButton("Tutup", callback_data="close")],
+            [InlineKeyboardButton("𝗔𝗗𝗠𝗜𝗡", callback_data="daftar_admin")],
+            [
+                InlineKeyboardButton("𝗙𝗦𝗨𝗕", callback_data="daftar_fsub"),
+                InlineKeyboardButton("𝗠𝗢𝗗𝗘", callback_data="Mode_fsub"),
+            ],
+            [
+                InlineKeyboardButton("𝗗𝗕 𝗜𝗗", callback_data="db_id"),
+                InlineKeyboardButton("𝗗𝗕 𝗨𝗥𝗟", callback_data="db_url"),
+            ],
+            [InlineKeyboardButton("𝗣𝗥𝗢𝗧𝗘𝗖𝗧", callback_data="protect")],
+            [
+                InlineKeyboardButton("𝗧𝗜𝗠𝗘", callback_data="time_delete"),
+                InlineKeyboardButton("𝗦𝗘𝗥𝗩𝗘𝗥", callback_data="server_info"),
+            ],
+            [
+                InlineKeyboardButton("𝗠𝗘𝗦𝗦𝗔𝗚𝗘", callback_data="set_force_msg"),
+                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="set_welcome"),
+            ],
+            [InlineKeyboardButton("𝗖𝗨𝗦𝗧𝗢𝗠 𝗖𝗔𝗣𝗧𝗜𝗢𝗡", callback_data="custom_caption")],
+            [InlineKeyboardButton("𝗞𝗢𝗡𝗧𝗘𝗡", callback_data="konten")],
+            [InlineKeyboardButton("𝗧𝗨𝗧𝗨𝗣", callback_data="close")],
         ]
-        await response.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+        await query.message.edit_text("<b>𝗠𝗲𝗻𝘂 𝗦𝗲𝘁𝘁𝗶𝗻𝗴𝘀</b>", parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(keyboard))
 
     elif data == "hapus_admin":
         admin_ids = await db.get_all_admins()
@@ -142,17 +155,30 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         await db.del_admin(admin_id)
         await query.message.edit_text(f"Admin dengan ID {admin_id} berhasil dihapus.")
         keyboard = [
-            [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
-            [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
-            [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
-            [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
-            [InlineKeyboardButton("Server Info", callback_data="server_info")],
-            [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
-            [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
-            [InlineKeyboardButton("Tutup", callback_data="close")],
+            [InlineKeyboardButton("𝗔𝗗𝗠𝗜𝗡", callback_data="daftar_admin")],
+            [
+                InlineKeyboardButton("𝗙𝗦𝗨𝗕", callback_data="daftar_fsub"),
+                InlineKeyboardButton("𝗠𝗢𝗗𝗘", callback_data="Mode_fsub"),
+            ],
+            [
+                InlineKeyboardButton("𝗗𝗕 𝗜𝗗", callback_data="db_id"),
+                InlineKeyboardButton("𝗗𝗕 𝗨𝗥𝗟", callback_data="db_url"),
+            ],
+            [InlineKeyboardButton("𝗣𝗥𝗢𝗧𝗘𝗖𝗧", callback_data="protect")],
+            [
+                InlineKeyboardButton("𝗧𝗜𝗠𝗘", callback_data="time_delete"),
+                InlineKeyboardButton("𝗦𝗘𝗥𝗩𝗘𝗥", callback_data="server_info"),
+            ],
+            [
+                InlineKeyboardButton("𝗠𝗘𝗦𝗦𝗔𝗚𝗘", callback_data="set_force_msg"),
+                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="set_welcome"),
+            ],
+            [InlineKeyboardButton("𝗖𝗨𝗦𝗧𝗢𝗠 𝗖𝗔𝗣𝗧𝗜𝗢𝗡", callback_data="custom_caption")],
+            [InlineKeyboardButton("𝗞𝗢𝗡𝗧𝗘𝗡", callback_data="konten")],
+            [InlineKeyboardButton("𝗧𝗨𝗧𝗨𝗣", callback_data="close")],
         ]
-        await query.message.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
-
+        await query.message.edit_text("<b>𝗠𝗲𝗻𝘂 𝗦𝗲𝘁𝘁𝗶𝗻𝗴𝘀</b>", parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(keyboard))
+        
     elif data == "daftar_fsub":
          channels = await db.show_channels()
          if not channels:
@@ -229,17 +255,29 @@ async def cb_handler(client: Bot, query: CallbackQuery):
 
         # Tampilkan kembali menu pengaturan
         keyboard = [
-            [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
-            [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
-            [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
-            [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
-            [InlineKeyboardButton("Server Info", callback_data="server_info")],
-            [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
-            [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
-            [InlineKeyboardButton("Tutup", callback_data="close")],
+            [InlineKeyboardButton("𝗔𝗗𝗠𝗜𝗡", callback_data="daftar_admin")],
+            [
+                InlineKeyboardButton("𝗙𝗦𝗨𝗕", callback_data="daftar_fsub"),
+                InlineKeyboardButton("𝗠𝗢𝗗𝗘", callback_data="Mode_fsub"),
+            ],
+            [
+                InlineKeyboardButton("𝗗𝗕 𝗜𝗗", callback_data="db_id"),
+                InlineKeyboardButton("𝗗𝗕 𝗨𝗥𝗟", callback_data="db_url"),
+            ],
+            [InlineKeyboardButton("𝗣𝗥𝗢𝗧𝗘𝗖𝗧", callback_data="protect")],
+            [
+                InlineKeyboardButton("𝗧𝗜𝗠𝗘", callback_data="time_delete"),
+                InlineKeyboardButton("𝗦𝗘𝗥𝗩𝗘𝗥", callback_data="server_info"),
+            ],
+            [
+                InlineKeyboardButton("𝗠𝗘𝗦𝗦𝗔𝗚𝗘", callback_data="set_force_msg"),
+                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="set_welcome"),
+            ],
+            [InlineKeyboardButton("𝗖𝗨𝗦𝗧𝗢𝗠 𝗖𝗔𝗣𝗧𝗜𝗢𝗡", callback_data="custom_caption")],
+            [InlineKeyboardButton("𝗞𝗢𝗡𝗧𝗘𝗡", callback_data="konten")],
+            [InlineKeyboardButton("𝗧𝗨𝗧𝗨𝗣", callback_data="close")],
         ]
-        await client.send_message(query.from_user.id, "Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
-
+        await query.message.edit_text("<b>𝗠𝗲𝗻𝘂 𝗦𝗲𝘁𝘁𝗶𝗻𝗴𝘀</b>", parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(keyboard))
 
     elif data == "hapus_channel":
         channels = await db.show_channels()
@@ -255,17 +293,31 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         await db.rem_channel(channel_id)
         await query.message.edit_text(f"Channel dengan ID {channel_id} berhasil dihapus.")
         keyboard = [
-            [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
-            [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
-            [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
-            [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
-            [InlineKeyboardButton("Server Info", callback_data="server_info")],
-            [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
-            [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
-            [InlineKeyboardButton("Tutup", callback_data="close")],
+            [InlineKeyboardButton("𝗔𝗗𝗠𝗜𝗡", callback_data="daftar_admin")],
+            [
+                InlineKeyboardButton("𝗙𝗦𝗨𝗕", callback_data="daftar_fsub"),
+                InlineKeyboardButton("𝗠𝗢𝗗𝗘", callback_data="Mode_fsub"),
+            ],
+            [
+                InlineKeyboardButton("𝗗𝗕 𝗜𝗗", callback_data="db_id"),
+                InlineKeyboardButton("𝗗𝗕 𝗨𝗥𝗟", callback_data="db_url"),
+            ],
+            [InlineKeyboardButton("𝗣𝗥𝗢𝗧𝗘𝗖𝗧", callback_data="protect")],
+            [
+                InlineKeyboardButton("𝗧𝗜𝗠𝗘", callback_data="time_delete"),
+                InlineKeyboardButton("𝗦𝗘𝗥𝗩𝗘𝗥", callback_data="server_info"),
+            ],
+            [
+                InlineKeyboardButton("𝗠𝗘𝗦𝗦𝗔𝗚𝗘", callback_data="set_force_msg"),
+                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="set_welcome"),
+            ],
+            [InlineKeyboardButton("𝗖𝗨𝗦𝗧𝗢𝗠 𝗖𝗔𝗣𝗧𝗜𝗢𝗡", callback_data="custom_caption")],
+            [InlineKeyboardButton("𝗞𝗢𝗡𝗧𝗘𝗡", callback_data="konten")],
+            [InlineKeyboardButton("𝗧𝗨𝗧𝗨𝗣", callback_data="close")],
         ]
-        await query.message.reply_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+        await query.message.edit_text("<b>𝗠𝗲𝗻𝘂 𝗦𝗲𝘁𝘁𝗶𝗻𝗴𝘀</b>", parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(keyboard))
 
+    
     elif data == "Mode_fsub":
         channels = await db.show_channels()
         if not channels:
@@ -361,17 +413,31 @@ async def cb_handler(client: Bot, query: CallbackQuery):
 
     elif data in ["back_to_settings", "fsub_back"]:
         keyboard = [
-            [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
-            [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
-            [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
-            [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
-            [InlineKeyboardButton("Server Info", callback_data="server_info")],
-            [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
-            [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
-            [InlineKeyboardButton("Tutup", callback_data="close")],
+            [InlineKeyboardButton("𝗔𝗗𝗠𝗜𝗡", callback_data="daftar_admin")],
+            [
+                InlineKeyboardButton("𝗙𝗦𝗨𝗕", callback_data="daftar_fsub"),
+                InlineKeyboardButton("𝗠𝗢𝗗𝗘", callback_data="Mode_fsub"),
+            ],
+            [
+                InlineKeyboardButton("𝗗𝗕 𝗜𝗗", callback_data="db_id"),
+                InlineKeyboardButton("𝗗𝗕 𝗨𝗥𝗟", callback_data="db_url"),
+            ],
+            [InlineKeyboardButton("𝗣𝗥𝗢𝗧𝗘𝗖𝗧", callback_data="protect")],
+            [
+                InlineKeyboardButton("𝗧𝗜𝗠𝗘", callback_data="time_delete"),
+                InlineKeyboardButton("𝗦𝗘𝗥𝗩𝗘𝗥", callback_data="server_info"),
+            ],
+            [
+                InlineKeyboardButton("𝗠𝗘𝗦𝗦𝗔𝗚𝗘", callback_data="set_force_msg"),
+                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="set_welcome"),
+            ],
+            [InlineKeyboardButton("𝗖𝗨𝗦𝗧𝗢𝗠 𝗖𝗔𝗣𝗧𝗜𝗢𝗡", callback_data="custom_caption")],
+            [InlineKeyboardButton("𝗞𝗢𝗡𝗧𝗘𝗡", callback_data="konten")],
+            [InlineKeyboardButton("𝗧𝗨𝗧𝗨𝗣", callback_data="close")],
         ]
-        await query.message.edit_text("Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+        await query.message.edit_text("<b>𝗠𝗲𝗻𝘂 𝗦𝗲𝘁𝘁𝗶𝗻𝗴𝘀</b>", parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(keyboard))
 
+    
     elif data == "time_delete":
         current_time = await db.get_del_timer()
         await query.message.edit_text(
@@ -394,17 +460,31 @@ async def cb_handler(client: Bot, query: CallbackQuery):
 
         # Tampilkan ulang menu
         keyboard = [
-            [InlineKeyboardButton("Daftar Admin", callback_data="daftar_admin")],
-            [InlineKeyboardButton("Daftar Fsub", callback_data="daftar_fsub")],
-            [InlineKeyboardButton("Mode Fsub", callback_data="Mode_fsub")],
-            [InlineKeyboardButton("Time Delete", callback_data="time_delete")],
-            [InlineKeyboardButton("Server Info", callback_data="server_info")],
-            [InlineKeyboardButton("Set Welcome", callback_data="set_welcome")],
-            [InlineKeyboardButton("Set Force Message", callback_data="set_force_msg")],
-            [InlineKeyboardButton("Tutup", callback_data="close")],
+            [InlineKeyboardButton("𝗔𝗗𝗠𝗜𝗡", callback_data="daftar_admin")],
+            [
+                InlineKeyboardButton("𝗙𝗦𝗨𝗕", callback_data="daftar_fsub"),
+                InlineKeyboardButton("𝗠𝗢𝗗𝗘", callback_data="Mode_fsub"),
+            ],
+            [
+                InlineKeyboardButton("𝗗𝗕 𝗜𝗗", callback_data="db_id"),
+                InlineKeyboardButton("𝗗𝗕 𝗨𝗥𝗟", callback_data="db_url"),
+            ],
+            [InlineKeyboardButton("𝗣𝗥𝗢𝗧𝗘𝗖𝗧", callback_data="protect")],
+            [
+                InlineKeyboardButton("𝗧𝗜𝗠𝗘", callback_data="time_delete"),
+                InlineKeyboardButton("𝗦𝗘𝗥𝗩𝗘𝗥", callback_data="server_info"),
+            ],
+            [
+                InlineKeyboardButton("𝗠𝗘𝗦𝗦𝗔𝗚𝗘", callback_data="set_force_msg"),
+                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="set_welcome"),
+            ],
+            [InlineKeyboardButton("𝗖𝗨𝗦𝗧𝗢𝗠 𝗖𝗔𝗣𝗧𝗜𝗢𝗡", callback_data="custom_caption")],
+            [InlineKeyboardButton("𝗞𝗢𝗡𝗧𝗘𝗡", callback_data="konten")],
+            [InlineKeyboardButton("𝗧𝗨𝗧𝗨𝗣", callback_data="close")],
         ]
-        await client.send_message(query.from_user.id, "Menu Setting", reply_markup=InlineKeyboardMarkup(keyboard))
+        await query.message.edit_text("<b>𝗠𝗲𝗻𝘂 𝗦𝗲𝘁𝘁𝗶𝗻𝗴𝘀</b>", parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(keyboard))
 
+    
     elif data == "server_info":
         await query.message.edit_text(
             "<b>🔄 Mengambil informasi server...</b>"
