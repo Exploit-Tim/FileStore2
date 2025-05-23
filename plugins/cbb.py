@@ -625,7 +625,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             media=InputMediaPhoto(
                 media=links["welcome"],
                 caption=f"<b>🌄 Link Aktif:</b>\n{links['welcome']}",
-                parse_mode="html"
+                parse_mode="HTML"
             ),
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
@@ -641,7 +641,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             media=InputMediaPhoto(
                 media=links["force"],
                 caption=f"<b>🔒 Link Aktif:</b>\n{links['force']}",
-                parse_mode="html"
+                parse_mode="HTML"
             ),
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
