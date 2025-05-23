@@ -32,7 +32,7 @@ BAN_SUPPORT = f"{BAN_SUPPORT}"
 async def start_command(client: Client, message: Message):
     user_id = message.from_user.id
 
-    # Check banned
+    # Check if user is banned
     banned_users = await db.get_ban_users()
     if user_id in banned_users:
         return await message.reply_text(
@@ -42,44 +42,48 @@ async def start_command(client: Client, message: Message):
                 [[InlineKeyboardButton("Contact Support", url=BAN_SUPPORT)]]
             )
         )
-
-    # Check subscription
+    # ✅ Check Force Subscription
     if not await is_subscribed(client, user_id):
+        #await temp.delete()
         return await not_joined(client, message)
 
-    # Set auto delete
-    FILE_AUTO_DELETE = await db.get_del_timer()
+    # File auto-delete time in seconds (Set your desired time in seconds here)
+    FILE_AUTO_DELETE = await db.get_del_timer()  # Example: 3600 seconds (1 hour)
 
-    # Add user
+    # Add user if not already present
     if not await db.present_user(user_id):
         try:
             await db.add_user(user_id)
         except:
             pass
 
+    # Handle normal message flow
     text = message.text
     if len(text) > 7:
         try:
             base64_string = text.split(" ", 1)[1]
         except IndexError:
-            return await send_start_photo(client, message)
+            return
 
-        try:
-            string = await decode(base64_string)
-            argument = string.split("-")
+        string = await decode(base64_string)
+        argument = string.split("-")
 
-            ids = []
-            if len(argument) == 3:
+        ids = []
+        if len(argument) == 3:
+            try:
                 start = int(int(argument[1]) / abs(client.db_channel.id))
                 end = int(int(argument[2]) / abs(client.db_channel.id))
                 ids = range(start, end + 1) if start <= end else list(range(start, end - 1, -1))
-            elif len(argument) == 2:
-                ids = [int(int(argument[1]) / abs(client.db_channel.id))]
-            else:
+            except Exception as e:
+                print(f"Error decoding IDs: {e}")
                 return
-        except Exception as e:
-            print(f"Error decoding: {e}")
-            return
+
+        elif len(argument) == 2:
+            try:
+                ids = [int(int(argument[1]) / abs(client.db_channel.id))]
+            except Exception as e:
+                print(f"Error decoding ID: {e}")
+                return
 
         temp_msg = await message.reply("<b>Please wait...</b>")
         try:
@@ -90,7 +94,7 @@ async def start_command(client: Client, message: Message):
             return
         finally:
             await temp_msg.delete()
-
+ 
         codeflix_msgs = []
 
         for msg in messages:
@@ -123,7 +127,7 @@ async def start_command(client: Client, message: Message):
 
         if FILE_AUTO_DELETE > 0:
             notification_msg = await message.reply(
-                f"<b>Tʜɪs Fɪʟᴇ ᴡɪʟʟ ʙᴇ Dᴇʟᴇᴛᴇᴅ ɪɴ {get_exp_time(FILE_AUTO_DELETE)}. Pʟᴇᴀsᴇ sᴀᴠᴇ ᴏʀ ғᴏʀᴡᴀʀᴅ ɪᴛ ᴛᴏ ʏᴏᴜʀ sᴀᴠᴇᴅ ᴍᴇssᴀɢᴇs ʙᴇғᴏʀᴇ ɪᴛ ɢᴇᴛs Dᴇʟᴇᴛᴇᴅ.</b>"
+                f"<b>Tʜɪs Fɪʟᴇ ᴡɪʟʟ ʙᴇ Dᴇʟᴇᴛᴇᴅ ɪɴ  {get_exp_time(FILE_AUTO_DELETE)}. Pʟᴇᴀsᴇ sᴀᴠᴇ ᴏʀ ғᴏʀᴡᴀʀᴅ ɪᴛ ᴛᴏ ʏᴏᴜʀ sᴀᴠᴇᴅ ᴍᴇssᴀɢᴇs ʙᴇғᴏʀᴇ ɪᴛ ɢᴇᴛs Dᴇʟᴇᴛᴇᴅ.</b>"
             )
 
             await asyncio.sleep(FILE_AUTO_DELETE)
@@ -151,13 +155,35 @@ async def start_command(client: Client, message: Message):
                 )
             except Exception as e:
                 print(f"Error updating notification with 'Get File Again' button: {e}")
+    else:
+        reply_markup = InlineKeyboardMarkup(
+            [
+                    [InlineKeyboardButton("• ᴍᴏʀᴇ ᴄʜᴀɴɴᴇʟs •", url="https://t.me/Nova_Flix/50")],
 
-        # ⬅️ Tambahkan ini supaya tetap kirim pesan start setelah kirim file
-       # await send_start_photo(client, message)
+    [
+                    InlineKeyboardButton("• ᴀʙᴏᴜᴛ", callback_data = "about"),
+                    InlineKeyboardButton('ʜᴇʟᴘ •', callback_data = "help")
+
+    ]
+            ]
+        )
+        picts = await db.get_pict_links()
+        start_pic_url = picts["welcome"]
+
+        await message.reply_photo(
+            photo=start_pic_url,
+            caption=START_MSG.format(
+                first=message.from_user.first_name,
+                last=message.from_user.last_name,
+                username=None if not message.from_user.username else '@' + message.from_user.username,
+                mention=message.from_user.mention,
+                id=message.from_user.id
+            ),
+            reply_markup=reply_markup,
+            message_effect_id=5104841245755180586)  # 🔥
+        
         return
 
-    # Jika start biasa (tanpa argumen)
-    await send_start_photo(client, message)
 
 
 #=====================================================================================##
@@ -176,18 +202,16 @@ async def not_joined(client: Client, message: Message):
     buttons = []
     count = 0
 
-    picts = await db.get_pict_links()
-    force_pic_url = picts["force"]
-
     try:
-        all_channels = await db.show_channels()
+        all_channels = await db.show_channels()  # Should return list of (chat_id, mode) tuples
         for total, chat_id in enumerate(all_channels, start=1):
-            mode = await db.get_channel_mode(chat_id)
+            mode = await db.get_channel_mode(chat_id)  # fetch mode 
 
             await message.reply_chat_action(ChatAction.TYPING)
 
             if not await is_sub(client, user_id, chat_id):
                 try:
+                    # Cache chat info
                     if chat_id in chat_data_cache:
                         data = chat_data_cache[chat_id]
                     else:
@@ -196,21 +220,22 @@ async def not_joined(client: Client, message: Message):
 
                     name = data.title
 
+                    # Generate proper invite link based on the mode
                     if mode == "on" and not data.username:
                         invite = await client.create_chat_invite_link(
                             chat_id=chat_id,
                             creates_join_request=True,
                             expire_date=datetime.utcnow() + timedelta(seconds=FSUB_LINK_EXPIRY) if FSUB_LINK_EXPIRY else None
-                        )
+                            )
                         link = invite.invite_link
+
                     else:
                         if data.username:
                             link = f"https://t.me/{data.username}"
                         else:
                             invite = await client.create_chat_invite_link(
                                 chat_id=chat_id,
-                                expire_date=datetime.utcnow() + timedelta(seconds=FSUB_LINK_EXPIRY) if FSUB_LINK_EXPIRY else None
-                            )
+                                expire_date=datetime.utcnow() + timedelta(seconds=FSUB_LINK_EXPIRY) if FSUB_LINK_EXPIRY else None)
                             link = invite.invite_link
 
                     buttons.append([InlineKeyboardButton(text=name, url=link)])
@@ -224,6 +249,7 @@ async def not_joined(client: Client, message: Message):
                         f"<blockquote expandable><b>Rᴇᴀsᴏɴ:</b> {e}</blockquote>"
                     )
 
+        # Retry Button
         try:
             buttons.append([
                 InlineKeyboardButton(
@@ -233,7 +259,6 @@ async def not_joined(client: Client, message: Message):
             ])
         except IndexError:
             pass
-
         await message.reply_photo(
             photo=force_pic_url,
             caption=FORCE_MSG.format(
