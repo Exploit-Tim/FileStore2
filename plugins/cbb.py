@@ -133,7 +133,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             ],
             [
                 InlineKeyboardButton("𝗠𝗘𝗦𝗦𝗔𝗚𝗘", callback_data="set_force_msg"),
-                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="set_welcome"),
+                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="menu_pict"),
             ],
             [InlineKeyboardButton("𝗖𝗨𝗦𝗧𝗢𝗠 𝗖𝗔𝗣𝗧𝗜𝗢𝗡", callback_data="custom_caption")],
             [InlineKeyboardButton("𝗞𝗢𝗡𝗧𝗘𝗡", callback_data="konten")],
@@ -171,7 +171,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             ],
             [
                 InlineKeyboardButton("𝗠𝗘𝗦𝗦𝗔𝗚𝗘", callback_data="set_force_msg"),
-                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="set_welcome"),
+                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="menu_pict"),
             ],
             [InlineKeyboardButton("𝗖𝗨𝗦𝗧𝗢𝗠 𝗖𝗔𝗣𝗧𝗜𝗢𝗡", callback_data="custom_caption")],
             [InlineKeyboardButton("𝗞𝗢𝗡𝗧𝗘𝗡", callback_data="konten")],
@@ -271,7 +271,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             ],
             [
                 InlineKeyboardButton("𝗠𝗘𝗦𝗦𝗔𝗚𝗘", callback_data="set_force_msg"),
-                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="set_welcome"),
+                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="menu_pict"),
             ],
             [InlineKeyboardButton("𝗖𝗨𝗦𝗧𝗢𝗠 𝗖𝗔𝗣𝗧𝗜𝗢𝗡", callback_data="custom_caption")],
             [InlineKeyboardButton("𝗞𝗢𝗡𝗧𝗘𝗡", callback_data="konten")],
@@ -309,7 +309,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             ],
             [
                 InlineKeyboardButton("𝗠𝗘𝗦𝗦𝗔𝗚𝗘", callback_data="set_force_msg"),
-                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="set_welcome"),
+                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="menu_pict"),
             ],
             [InlineKeyboardButton("𝗖𝗨𝗦𝗧𝗢𝗠 𝗖𝗔𝗣𝗧𝗜𝗢𝗡", callback_data="custom_caption")],
             [InlineKeyboardButton("𝗞𝗢𝗡𝗧𝗘𝗡", callback_data="konten")],
@@ -429,7 +429,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             ],
             [
                 InlineKeyboardButton("𝗠𝗘𝗦𝗦𝗔𝗚𝗘", callback_data="set_force_msg"),
-                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="set_welcome"),
+                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="menu_pict"),
             ],
             [InlineKeyboardButton("𝗖𝗨𝗦𝗧𝗢𝗠 𝗖𝗔𝗣𝗧𝗜𝗢𝗡", callback_data="custom_caption")],
             [InlineKeyboardButton("𝗞𝗢𝗡𝗧𝗘𝗡", callback_data="konten")],
@@ -476,7 +476,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             ],
             [
                 InlineKeyboardButton("𝗠𝗘𝗦𝗦𝗔𝗚𝗘", callback_data="set_force_msg"),
-                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="set_welcome"),
+                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="menu_pict"),
             ],
             [InlineKeyboardButton("𝗖𝗨𝗦𝗧𝗢𝗠 𝗖𝗔𝗣𝗧𝗜𝗢𝗡", callback_data="custom_caption")],
             [InlineKeyboardButton("𝗞𝗢𝗡𝗧𝗘𝗡", callback_data="konten")],
@@ -600,6 +600,46 @@ async def cb_handler(client: Bot, query: CallbackQuery):
                 ])
             )
 
+#MENU PICT
+
+    elif data == "menu_pict":
+        links = await db.get_pict_links()
+        keyboard = [
+            [InlineKeyboardButton("📸 Pict Welcome", callback_data="show_welcome_pict")],
+            [InlineKeyboardButton("🔐 Pict Force", callback_data="show_force_pict")],
+            [InlineKeyboardButton("🔙 Kembali", callback_data="back_to_settings")]
+        ]
+        text = "<b>🖼 Pilih jenis gambar untuk ditampilkan atau diganti link-nya.</b>"
+        await query.message.edit_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
+
+    elif data == "show_welcome_pict":
+        links = await db.get_pict_links()
+        keyboard = [
+            [InlineKeyboardButton("🔁 Ganti Link", callback_data="change_welcome_link")],
+            [InlineKeyboardButton("🔙 Kembali", callback_data="menu_pict")]
+        ]
+        await query.message.reply_photo(links["welcome"], caption=f"<b>🌄 Link Aktif:</b>\n{links['welcome']}", reply_markup=InlineKeyboardMarkup(keyboard))
+
+    elif data == "show_force_pict":
+        links = await db.get_pict_links()
+        keyboard = [
+            [InlineKeyboardButton("🔁 Ganti Link", callback_data="change_force_link")],
+            [InlineKeyboardButton("🔙 Kembali", callback_data="menu_pict")]
+        ]
+        await query.message.reply_photo(links["force"], caption=f"<b>🔒 Link Aktif:</b>\n{links['force']}", reply_markup=InlineKeyboardMarkup(keyboard))
+
+    elif data == "change_welcome_link":
+        await query.message.edit_text("Kirim link baru untuk <b>Pict Welcome</b>.")
+        response = await client.listen(query.from_user.id)
+        await db.set_pict_link("welcome", response.text)
+        await response.reply_text("✅ Link Pict Welcome berhasil diubah!")
+
+    elif data == "change_force_link":
+        await query.message.edit_text("Kirim link baru untuk <b>Pict Force</b>.")
+        response = await client.listen(query.from_user.id)
+        await db.set_pict_link("force", response.text)
+        await response.reply_text("✅ Link Pict Force berhasil diubah!")
+
             
     elif data == "back_to_settings":
         keyboard = [
@@ -619,7 +659,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             ],
             [
                 InlineKeyboardButton("𝗠𝗘𝗦𝗦𝗔𝗚𝗘", callback_data="set_force_msg"),
-                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="set_welcome"),
+                InlineKeyboardButton("𝗣𝗜𝗖𝗧", callback_data="menu_pict"),
             ],
             [InlineKeyboardButton("𝗖𝗨𝗦𝗧𝗢𝗠 𝗖𝗔𝗣𝗧𝗜𝗢𝗡", callback_data="custom_caption")],
             [InlineKeyboardButton("𝗞𝗢𝗡𝗧𝗘𝗡", callback_data="konten")],
