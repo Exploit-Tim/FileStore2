@@ -1,4 +1,4 @@
-# RT# Copyright (C) 2025 by Codeflix-Bots@Github, < https://github.com/Codeflix-Bots >.
+# Copyright (C) 2025 by Codeflix-Bots@Github, < https://github.com/Codeflix-Bots >.
 # This file is part of < https://github.com/Codeflix-Bots/FileStore > project,
 # and is released under the MIT License.
 # Please see < https://github.com/Codeflix-Bots/FileStore/blob/master/LICENSE >
@@ -321,6 +321,8 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         ]
         await query.message.edit_text("<b>𝗠𝗲𝗻𝘂 𝗦𝗲𝘁𝘁𝗶𝗻𝗴𝘀</b>", parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(keyboard))
 
+###-------------MENU FSUB MODE-------------###
+
     
     elif data == "Mode_fsub":
         channels = await db.show_channels()
@@ -356,26 +358,26 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         current_mode = await db.get_channel_mode(ch_id)
         new_mode = "off" if current_mode == "on" else "on"
         await db.set_channel_mode(ch_id, new_mode)
-
-        # Refresh tampilan Mode_fsub
+        await query.answer(f"Join Mode diubah ke {'Invite Link' if new_mode == 'on' else 'Public'}")
+    
+        # Refresh list
         channels = await db.show_channels()
         buttons = []
         for channel_id in channels:
             try:
                 chat = await client.get_chat(channel_id)
                 mode = await db.get_channel_mode(channel_id)
-                status = "🟢 ON" if mode == "on" else "🔴 OFF"
-                title = f"{chat.title} [{status}]"
+                status = "🟢" if mode == "on" else "🔴"
+                title = f"{chat.title} [{status} {'Invite Link' if mode == 'on' else 'Public'}]"
                 buttons.append([InlineKeyboardButton(title, callback_data=f"toggle_mode_{channel_id}")])
             except:
                 buttons.append([InlineKeyboardButton(f"⚠️ {channel_id} (Error)", callback_data=f"toggle_mode_{channel_id}")])
-
+    
         buttons.append([InlineKeyboardButton("Kembali", callback_data="back_to_settings")])
-
         await query.message.edit_text(
-            "<b>⚙️ Mode Fsub per Channel</b>\n"
-            "<i>Klik nama channel untuk mengaktifkan/nonaktifkan mode Fsub:</i>\n\n"
-            "🟢 = Aktif\n🔴 = Tidak aktif",
+            "<b>⚙️ Mode Join Link per Channel</b>\n"
+            "<i>Klik untuk ubah antara private invite dan join biasa:</i>\n\n"
+            "🟢 = Invite Link\n🔴 = Public Join",
             reply_markup=InlineKeyboardMarkup(buttons)
         )
 
