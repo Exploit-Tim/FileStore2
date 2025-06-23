@@ -27,7 +27,7 @@ CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002797506458")) #Your db channe
 OWNER = os.environ.get("OWNER", "Jonathan") # Owner username without @
 OWNER_ID = int(os.environ.get("OWNER_ID", "5648296402")) # Owner id
 #--------------------------------------------
-PORT = os.environ.get("PORT", "8001")
+PORT = os.environ.get("PORT", "8002")
 #--------------------------------------------
 DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://naura:ahahahahaha@naura.al4xuyo.mongodb.net/?retryWrites=true&w=majority&appName=naura")
 DB_NAME = os.environ.get("DATABASE_NAME", "Cluooo")
